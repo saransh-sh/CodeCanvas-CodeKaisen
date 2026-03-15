@@ -1,58 +1,18 @@
+/* Frontend */
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeCanvas – Personal Productivity and Habit Tracker</title>
+    <title>Document</title>
     <style>
-        /* Reset and base styles */
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f5f5f5;
-        }
-
-        /* Header */
-        header {
-            background-color: #2c3e50;
-            color: #fff;
-            text-align: center;
-            padding: 24px 16px;
-        }
-
-        header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 4px;
-        }
-
-        header p {
-            font-size: 1rem;
-            opacity: 0.85;
-        }
-
-        /* Section spacing */
-        section {
-            max-width: 960px;
-            margin: 32px auto;
-            padding: 0 16px;
-        }
-
-        /* Image gallery – horizontal layout */
+        /* Horizontal image gallery */
         .image-gallery {
             display: flex;
             flex-direction: row;
             gap: 16px;
             overflow-x: auto;
-            padding: 16px 0;
+            margin: 16px 0;
         }
 
         .image-gallery img {
@@ -61,178 +21,36 @@
             max-width: 100%;
             height: 200px;
             object-fit: cover;
-            border-radius: 8px;
-            display: block;
         }
 
-        /* Why choose us */
-        .why-choose-us {
-            text-align: center;
-        }
-
-        .why-choose-us h2 {
-            font-size: 1.5rem;
-            margin-bottom: 24px;
-            color: #2c3e50;
-        }
-
-        .features {
-            display: flex;
-            flex-direction: row;
-            gap: 24px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .feature-card {
-            flex: 1 1 200px;
-            max-width: 280px;
-            background: #fff;
-            border-radius: 8px;
-            padding: 24px 16px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .feature-card h3 {
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-
-        .feature-card p {
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        /* Login form */
-        .login-section {
-            max-width: 400px;
-        }
-
-        .login-section h2 {
-            margin-bottom: 16px;
-            color: #2c3e50;
-        }
-
-        .login-form {
-            background: #fff;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
+        /* Form spacing */
         .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: bold;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .login-form button {
-            width: 100%;
-            padding: 10px;
-            background-color: #2c3e50;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .login-form button:hover {
-            background-color: #1a252f;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 24px 16px;
-            color: #777;
-            font-size: 0.9rem;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .image-gallery {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .image-gallery img {
-                width: 100%;
-                flex: none;
-            }
-
-            .features {
-                flex-direction: column;
-                align-items: center;
-            }
+            margin-bottom: 12px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>CodeCanvas</h1>
-        <p>Personal Productivity and Habit Tracker</p>
-    </header>
+    <h1>Login Page</h1>
 
-    <!-- Image gallery – horizontal orientation -->
-    <section>
-        <div class="image-gallery">
-            <img src="https://via.placeholder.com/320x200?text=Track+Habits" alt="Track Habits">
-            <img src="https://via.placeholder.com/320x200?text=Manage+Tasks" alt="Manage Tasks">
-            <img src="https://via.placeholder.com/320x200?text=View+Progress" alt="View Progress">
+    <div class="image-gallery">
+        <img src="https://via.placeholder.com/320x200?text=Track+Habits" alt="Track Habits">
+        <img src="https://via.placeholder.com/320x200?text=Manage+Tasks" alt="Manage Tasks">
+        <img src="https://via.placeholder.com/320x200?text=View+Progress" alt="View Progress">
+    </div>
+
+    <h2>Why choose us?</h2>
+
+    <form action="/login" method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
         </div>
-    </section>
-
-    <!-- Why choose us -->
-    <section class="why-choose-us">
-        <h2>Why choose us?</h2>
-        <div class="features">
-            <div class="feature-card">
-                <h3>Habit Tracking</h3>
-                <p>Build consistent daily habits and maintain streaks effortlessly.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Task Management</h3>
-                <p>Organize your to-do lists and stay on top of your priorities.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Progress Visualization</h3>
-                <p>See your productivity trends at a glance with simple charts.</p>
-            </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
         </div>
-    </section>
-
-    <!-- Login form -->
-    <section class="login-section">
-        <h2>Login</h2>
-        <form class="login-form" action="/login" method="post">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
-    </section>
-
-    <footer>
-        <p>&copy; 2026 CodeCanvas – CodeKaisen</p>
-    </footer>
+        <input type="submit" value="Login">
+    </form>
+    
 </body>
 </html>
