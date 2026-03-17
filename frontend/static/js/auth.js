@@ -37,3 +37,19 @@ async function getIdToken() {
   if (!user) throw new Error("Not authenticated");
   return user.getIdToken();
 }
+
+async function apiFetch(url, options = {}) {
+  const token = await getIdToken();
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+    ...(options.headers || {}),
+  };
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.detail || `HTTP ${response.status}`);
+  }
+  if (response.status === 204) return null;
+  return response.json();
+}
