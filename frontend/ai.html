@@ -25,5 +25,41 @@
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
+
+    <div class="page-heading ai-hero">
+
+  <div class="ai-mascot">
+    <img id="aiMascot" />
+  </div>
+
+  <div>
+    <h2>AI Assistant</h2>
+    <p class="page-subtitle">Trinity keeps guidance inside a clean card layout so insights stay aligned with your data.</p>
+  </div>
+
+</div>
+
+    <div id="aiStatusBanner" class="ai-status-banner" style="display:none;"></div>
+
+    <div class="section">
+      <div class="chat-card">
+        <div id="chatWindow">
+          <div class="msg-ai"><span class="bubble-ai">Hi! I'm Trinity, your AI productivity coach. Ask me anything about your habits and I'll keep the answers grounded in your recent activity.</span></div>
+        </div>
+        <div class="send-row">
+          <input type="text" id="userInput" placeholder="Ask me something…" onkeydown="if(event.key==='Enter') sendMessage()" />
+          <button class="btn btn-primary" onclick="sendMessage()" id="sendBtn">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="calendar-card">
+        <h3>Monthly productivity calendar</h3>
+        <div id="calendarGrid" class="calendar-grid">Loading…</div>
+      </div>
+    </div>
+  </div>
+  
 </body>
 </html>
