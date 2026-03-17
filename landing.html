@@ -400,8 +400,33 @@
   } catch (err) {
     console.error("Mascot load failed:", err);
   }
-} 
-loadKaizenGifs("heroMascot", "landing");
-loadKaizenGifs("kaizenLogo", "logo");
+ } 
+ loadKaizenGifs("heroMascot", "landing");
+ loadKaizenGifs("kaizenLogo", "logo");
+
+
+
+    async function loadTeam() {
+      const grid = document.getElementById("teamGrid");
+      if (!grid) return;
+      try {
+        const res = await fetch("/assets/developers.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const devs = await res.json();
+        grid.innerHTML = devs.map((dev, i) => `
+          <div class="dev-card">
+            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='/assets/logo.png'" />
+            <p class="dev-role">${escapeHtml(dev.role || "")}</p>
+            <h3 class="dev-name">${escapeHtml(dev.name)}</h3>
+            <p class="dev-quote">&ldquo;${escapeHtml(dev.quote || "")}&rdquo;</p>
+            <p class="dev-bio">${escapeHtml(dev.bio || "")}</p>
+          </div>`).join("");
+      } catch (err) {
+        console.warn("Could not load developers.json:", err);
+        grid.innerHTML = "<p class='section-subtitle'>Team info unavailable.</p>";
+      }
+    }
+    loadTeam();
+    
 </body>
 </html>
