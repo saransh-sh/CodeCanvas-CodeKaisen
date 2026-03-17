@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaizen AI – Smart Habit Planner</title>
+
+  <style>
+
+    .body { padding: 0; }
+    .landing-container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .section-stack { display: flex; flex-direction: column; gap: 20px; }
+    .section-title { margin-bottom: 4px; }
+    .section-subtitle { margin: 0 0 12px; color: var(--text-secondary); font-size: 0.95em; }
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    
+    .hero-card {
+      display: flex;
+      padding: 20px;
+      align-items: center;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-md);
+      gap: 24px;
+    }
+    .hero-content h1 {
+      margin: 0 0 10px;
+      font-size: 2em;
+      line-height: 1.3;
+      letter-spacing: 0.4px;
+      color: var(--text-primary);
+    }
+    .hero-content p { margin: 0 0 16px; color: var(--text-secondary); }
+    .eyebrow {
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: var(--accent-dark);
+      font-size: 0.8em;
+      margin: 0 0 6px;
+    }
+
+        .auth-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .auth-section { margin: 0; }
+    #loginError { color: #d32f2f; font-size: 0.85em; margin-top: 4px; }
+    .logged-in-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    
+
+    .pill {
+      border: 1px dashed var(--border-color);
+      background: var(--bg-primary);
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+    .section-card {
+      padding: 18px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-sm);
+    }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    
+    .why-card, .feature-card {
+      padding: 14px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .why-card h3, .feature-card h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1em;
+    }
+    .why-card p, .feature-card p {
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    
+    .explore-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .landing-footer {
+      text-align: center;
+      padding: 14px 0;
+      border-top: 2px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.85em;
+      margin-top: 4px;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .dev-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding: 20px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+    .dev-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-light);
+      background: var(--bg-primary);
+    }
+    .dev-name {
+      margin: 0;
+      font-size: 1.05em;
+      color: var(--text-primary);
+    }
+    .dev-role {
+      margin: 0;
+      font-size: 0.8em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-dark);
+      font-weight: bold;
+    }
+    .dev-quote {
+      margin: 0;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 0.88em;
+      line-height: 1.5;
+    }
+    .dev-bio {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.82em;
+      line-height: 1.4;
+    }
+
+        
+    .hero-mascot {
+  flex: 0 0 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-mascot img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+  .hero-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+</style>
+</head>
+<body>
+  <div class="landing-container">
+
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="/assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/ai.html">AI Chat</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+      </div>
+    </header>
+
+     <main class="section-stack">
+      <section class="hero-card animate-fade-in">
+        <div class="hero-mascot">
+  <img src="/assets/mascots/landing.png" alt="Kaizen mascot" id="heroMascot" />
+</div>
+
+<div class="hero-content">
+          <p class="eyebrow"></p>
+          <h1>Small daily improvements, massive results.</h1>
+          <p>Kaizen AI keeps habits, timers, analytics, and coaching inside a single, balanced workspace built on a clean card system.</p>
+          <div class="auth-card">
+            <div class="auth-section" id="authSection">
+              <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+                Login with Google
+              </button>
+              <p id="loginError"></p>
+            </div>
+            <div class="auth-section hidden" id="loggedInSection">
+              <div class="logged-in-bar">
+                <span>Signed in as <strong id="userName"></strong></span>
+                <button class="btn btn-primary" onclick="window.location.href='/dashboard.html'">
+                  Go to Dashboard
+                </button>
+                <button class="btn btn-signout" onclick="handleSignOut()">Sign Out</button>
+              </div>
+            </div>
+          </div>
+     <div class="meta-row">
+            <div class="pill">Progress dashboards</div>
+            <div class="pill">AI-assisted coaching</div>
+            <div class="pill">Calm, pixel-inspired UI</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card animate-fade-in">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Why Kaizen AI</p>
+            <h2 class="section-title">Organized, calm, focused</h2>
+           
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="why-card">
+            <h3>Track everything with clarity</h3>
+            <p>Habits, time blocks, and streaks sit inside tidy panels so you can see progress at a glance without clutter.</p>
+          </div>
+          <div class="why-card">
+            <h3>AI that stays contextual</h3>
+            <p>Guidance runs beside your data, letting recommendations stay relevant to the work you just logged.</p>
+          </div>
+          <div class="why-card">
+            <h3>Motivation through structure</h3>
+            <p>Scores, goals, and history are grouped by card—balanced spacing keeps the experience readable and calm.</p>
+          </div>
+        </div>
+    </section>
+
+    <section class="section-card animate-fade-in">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Features</p>
+            <h2 class="section-title">A modern productivity dashboard</h2>
+            
+          </div>
+        </div>
+        
+        <div class="card-grid">
+          <div class="feature-card">
+            <h3>Habit tracking</h3>
+            <p>Create habits, set daily targets, and log multiple sessions without losing context.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Analytics &amp; graphs</h3>
+            <p>Doughnut, bar, line, and radar charts live in matching cards with balanced padding.</p>
+          </div>
+          <div class="feature-card">
+            <h3>AI assistant</h3>
+            <p>Coach conversations run alongside your data and pull the latest context for better suggestions.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Pomodoro timer</h3>
+            <p>Work and break intervals sit inside a compact panel so focus tools stay within reach.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Ambient mode</h3>
+            <p>Minimal clock and noise controls stay carded, keeping breathing room for long sessions.</p>
+          </div>
+          <div class="feature-card">
+            <h3>History &amp; scores</h3>
+            <p>Past performance is organized into rows and details panels that mirror the rest of the layout.</p>
+          </div>
+        </div>
+    </section>
+
+
+     <section class="section-card animate-fade-in">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">Navigate</p>
+            <h2 class="section-title">Jump into any workspace</h2>
+            
+          </div>
+        </div>
+        <div class="explore-grid">
+          <a href="/dashboard.html" class="quick-btn">Dashboard</a>
+          <a href="/activity.html" class="quick-btn">Activities</a>
+          <a href="/graphs.html" class="quick-btn">Graphs</a>
+          <a href="/history.html" class="quick-btn">History</a>
+          <a href="/ai.html" class="quick-btn">AI Chat</a>
+          <a href="/pomodoro.html" class="quick-btn">Pomodoro</a>
+          <a href="/ambient.html" class="quick-btn">Ambient Mode</a>
+          <a href="/profile.html" class="quick-btn">Profile</a>
+        </div>
+      </section>
+
+      <section class="section-card animate-fade-in">
+        <div class="section-header">
+          <div>
+            <p class="eyebrow">The Team</p>
+            <h2 class="section-title">Meet the developers</h2>
+            <p class="section-subtitle">The people behind Kaizen AI.</p>
+          </div>
+        </div>
+        <div class="team-grid" id="teamGrid">
+
+        </div>
+      </section>
+
+      <footer class="landing-footer">
+        Kaizen AI – Small daily improvements lead to massive results.
+      </footer>
+    </main>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script>
+    (function initScrollAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.style.animationPlayState = 'running';
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.animate-fade-in').forEach(el => {
+        el.style.animationPlayState = 'paused';
+        observer.observe(el);
+      });
+    })();
+
+       async function loadKaizenGifs(id, type) {
+  try {
+    const res = await fetch("/assets/mascots.json");
+    const data = await res.json();
+
+    const el = document.getElementById(id);
+
+    if (data[type]) {
+      el.src = data[type];
+    } else {
+      el.src = data["fallback"];
+    }
+  } catch (err) {
+    console.error("Mascot load failed:", err);
+  }
+ } 
+ loadKaizenGifs("heroMascot", "landing");
+ loadKaizenGifs("kaizenLogo", "logo");
+
+
+
+    async function loadTeam() {
+      const grid = document.getElementById("teamGrid");
+      if (!grid) return;
+      try {
+        const res = await fetch("/assets/developers.json");
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const devs = await res.json();
+        grid.innerHTML = devs.map((dev, i) => `
+          <div class="dev-card">
+            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='/assets/logo.png'" />
+            <p class="dev-role">${escapeHtml(dev.role || "")}</p>
+            <h3 class="dev-name">${escapeHtml(dev.name)}</h3>
+            <p class="dev-quote">&ldquo;${escapeHtml(dev.quote || "")}&rdquo;</p>
+            <p class="dev-bio">${escapeHtml(dev.bio || "")}</p>
+          </div>`).join("");
+      } catch (err) {
+        console.warn("Could not load developers.json:", err);
+        grid.innerHTML = "<p class='section-subtitle'>Team info unavailable.</p>";
+      }
+    }
+    loadTeam();
+
+    
+
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function escapeAttr(str) {
+      return String(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    // Auth state handling
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("loggedInSection").classList.remove("hidden");
+        document.getElementById("userName").textContent = user.displayName || user.email;
+        syncUser(user);
+      }
+    });
+
+    async function handleLogin() {
+      try {
+        const result = await signInWithGoogle();
+        await syncUser(result.user);
+        window.location.href = "/dashboard.html";
+      } catch (e) {
+        document.getElementById("loginError").textContent = e.message;
+      }
+    }
+
+    function handleSignOut() {
+      signOut();
+    }
+  </script>
+</body>
+</html>
