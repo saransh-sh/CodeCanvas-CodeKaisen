@@ -238,5 +238,13 @@ const today = new Date().toISOString().split("T")[0];
       } catch (e) { document.getElementById("logMsg").textContent = e.message; }
     }
 
+    async function deleteLog(id) {
+      try {
+        await apiFetch(`/api/activity/${id}`, { method: "DELETE" });
+        await loadTodayLogs();
+      } catch (e) { alert(e.message); }
+    }
+
+    
 </body>
 </html>
