@@ -31,6 +31,14 @@ if config.FIREBASE_SERVICE_ACCOUNT_KEY and os.path.exists(config.FIREBASE_SERVIC
 else:
     firebase_admin.initialize_app()
 
+app.include_router(users.router, prefix="/api")
+app.include_router(habits.router, prefix="/api")
+app.include_router(activity.router, prefix="/api")
+app.include_router(analytics.router, prefix="/api")
+app.include_router(history.router, prefix="/api")
+app.include_router(notes.router, prefix="/api")
+app.include_router(ai_chat.router, prefix="/api")
+
 @app.get("/api/config/firebase")
 def firebase_config():
  
