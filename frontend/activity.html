@@ -18,18 +18,18 @@
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="/assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/activity.html" class="active">Activity</a>
-        <a href="/graphs.html">Graphs</a>
-        <a href="/history.html">History</a>
-        <a href="/ai.html">AI</a>
-        <a href="/pomodoro.html">Pomodoro</a>
-        <a href="/ambient.html">Ambient</a>
-        <a href="/profile.html">Profile</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="activity.html" class="active">Activity</a>
+        <a href="graphs.html">Graphs</a>
+        <a href="history.html">History</a>
+        <a href="ai.html">AI</a>
+        <a href="pomodoro.html">Pomodoro</a>
+        <a href="ambient.html">Ambient</a>
+        <a href="profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
@@ -98,7 +98,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="/static/js/auth.js"></script>
+  <script src="static/js/auth.js"></script>
   <script>
 
 const today = new Date().toISOString().split("T")[0];
@@ -173,7 +173,7 @@ const today = new Date().toISOString().split("T")[0];
       msgEl.className = "";
       if (!name) { msgEl.textContent = "Habit name required."; return; }
 
-      // Check for duplicate habit in the same category
+     
       const duplicate = cachedHabits.some(h =>
         h.name.toLowerCase() === name.toLowerCase() &&
         (h.category || "").toLowerCase() === category.toLowerCase()
