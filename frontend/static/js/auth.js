@@ -23,3 +23,10 @@ async function signInWithGoogle() {
   await authReady;
   return firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
 }
+
+async function signOut() {
+  await authReady;
+  firebase.auth().signOut().then(() => {
+    window.location.href = "/landing.html";
+  });
+}
