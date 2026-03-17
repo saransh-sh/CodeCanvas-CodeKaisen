@@ -101,6 +101,29 @@
   <script src="/static/js/auth.js"></script>
   <script>
 
+const today = new Date().toISOString().split("T")[0];
+    document.getElementById("logDate").value = today;
+    document.getElementById("noteDate").value = today;
+    loadKaizenGifs();
 
+    let targetMinutes = 60;
+    let cachedHabits = [];
+
+    function adjustTarget(delta) {
+      targetMinutes = Math.max(15, targetMinutes + delta);
+      document.getElementById("targetDisplay").textContent = targetMinutes;
+      document.getElementById("habitTarget").value = targetMinutes;
+    }
+
+    document.getElementById("habitTarget").addEventListener("input", (e) => {
+      targetMinutes = parseInt(e.target.value) || 60;
+      document.getElementById("targetDisplay").textContent = targetMinutes;
+    });
+
+    requireAuth(async (user) => {
+      await loadHabits();
+      await loadTodayLogs();
+      await loadNotes();
+    });
 </body>
 </html>
