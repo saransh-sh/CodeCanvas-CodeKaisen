@@ -343,3 +343,41 @@ label {
 .animate-delay-2 { animation-delay: 0.2s; }
 .animate-delay-3 { animation-delay: 0.3s; }
 .animate-delay-4 { animation-delay: 0.4s; }
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.progress-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.dot-red    { background: #e57373; }
+.dot-yellow { background: #ffb74d; }
+.dot-green  { background: #81c784; }
+
+.progress-bar-bg {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-sm);
+  transition: width 0.5s ease;
+}
+
+.fill-red    { background: #e57373; }
+.fill-yellow { background: #ffb74d; }
+.fill-green  { background: #81c784; }
