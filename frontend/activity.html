@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity – Kaizen AI</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    .habit-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding: 6px 0; }
+    .log-item { border-bottom: 1px solid var(--border-light); padding: 4px 0; }
+    .cat { color: var(--text-muted); font-size: 0.85em; }
+    .category-header { font-weight: bold; margin-top: 12px; margin-bottom: 4px; font-size: 1.05em; }
+    .category-header:first-child { margin-top: 0; }
+    .duplicate-warning { color: #d63000; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="/assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/activity.html" class="active">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+    </div>
+</body>
+</html>
