@@ -38,3 +38,67 @@ a:hover { color: var(--accent); }
 
 .hidden { display: none !important; }
 
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.kaizen-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 2px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.kaizen-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.kaizen-logo img {
+  height: 50px;
+width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.kaizen-logo img:hover {
+  transform: scale(1.08);
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: 0.85em;
+  transition: all var(--transition);
+}
+
+.nav-links a:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-light);
+  color: var(--accent-dark);
+}
+
+.nav-links a.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent-dark);
+}
