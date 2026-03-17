@@ -319,7 +319,16 @@
       }
     }
 
-    
+     function escapeHtml(str) {
+      return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\n/g,"<br/>");
+    }
+
+    async function loadMascot() {
+      await loadKaizenGifs("aiMascot", "assistant");
+    }
+    loadMascot();
+  </script>
+
 
 </body>
 </html>
