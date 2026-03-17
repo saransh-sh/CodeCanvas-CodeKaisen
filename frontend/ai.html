@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Assistant – Kaizen AI</title>
-  <link rel="stylesheet" href="/static/css/style.css" />    
+  <link rel="stylesheet" href="static/css/style.css" />    
   <style>
 
     #chatWindow {
@@ -205,6 +205,32 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="/static/js/auth.js"></script>
   <script>
+     requireAuth(async (user) => {
+      await checkAIProviders();
+      await buildCalendar();
+    });
+
+    let lastFailedMessage = null;
+
+    async function checkAIProviders() {
+      try {
+        const data = await apiFetch("/api/ai/providers");
+        const banner = document.getElementById("aiStatusBanner");
+        if (data.openrouter) {
+          banner.className = "ai-status-banner ai-status-ok";
+          banner.textContent = "Arcee Trinity AI is online — ready to respond with context-aware coaching.";
+        } else {
+          banner.className = "ai-status-banner ai-status-warn";
+          banner.innerHTML = "No AI provider configured. Set <strong>OPENROUTER_API_KEY</strong> in your .env file.";
+        }
+        banner.style.display = "flex";
+      } catch {
+        const banner = document.getElementById("aiStatusBanner");
+        banner.className = "ai-status-banner ai-status-err";
+        banner.textContent = "Could not check AI status.";
+        banner.style.display = "flex";
+      }
+    }
 
 </body>
 </html>
