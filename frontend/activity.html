@@ -207,6 +207,19 @@ const today = new Date().toISOString().split("T")[0];
       } catch (e) { alert(e.message); }
     }
 
+
+     async function loadTodayLogs() {
+      try {
+        const logs = await apiFetch(`/api/activity?log_date=${today}`);
+        const el = document.getElementById("todayLogs");
+        if (!logs.length) { el.textContent = "No activity logged today."; return; }
+        el.innerHTML = logs.map(l =>
+          `<div class="log-item">${l.habit_name}: <strong>${l.minutes_spent} min</strong>
+           <button class="btn btn-sm" onclick="deleteLog('${l.id}')">✕</button></div>`
+        ).join("");
+      } catch (_) {}
+    }
+
     
 </body>
 </html>
