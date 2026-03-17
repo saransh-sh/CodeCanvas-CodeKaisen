@@ -53,3 +53,45 @@ async function apiFetch(url, options = {}) {
   if (response.status === 204) return null;
   return response.json();
 }
+
+async function loadKaizenGifs(mascotImgId, mascotKey) {
+  const MASCOTS_URL = "/assets/mascots.json";
+  const LOGO_FALLBACK = "/assets/logo.png";
+  let data = {};
+  try {
+    const res = await fetch(MASCOTS_URL);
+    data = await res.json();
+  } catch (err) {
+    console.warn("Failed to load mascots.json:", err);
+  }
+
+
+  const logoEl = document.getElementById("kaizenLogo");
+  if (logoEl) {
+    const logoSrc = (data.logo && data.logo.trim()) || LOGO_FALLBACK;
+    logoEl.src = logoSrc;
+  }
+
+  if (mascotImgId && mascotKey) {
+    const mascotEl = document.getElementById(mascotImgId);
+    if (mascotEl) {
+      const stored = localStorage.getItem("kaizen_mascot_url");
+      const preferred = (data[mascotKey] && data[mascotKey].trim()) || "";
+      const fallbackGif = (data.fallback && data.fallback.trim()) || LOGO_FALLBACK;
+      mascotEl.src = preferred || stored || fallbackGif;
+    }
+  }
+}
+
+
+async function syncUser(user) {
+  await fetch("/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      uid: user.uid,
+      email: user.email,
+      display_name: user.displayName,
+    }),
+  });
+}
