@@ -62,5 +62,40 @@
           <div id="todayLogs">Loading…</div>
         </div>
       </div>
+
+       <div>
+        <div class="card">
+          <h3>Create New Habit</h3>
+          <label>Habit Name</label>
+          <input type="text" id="habitName" placeholder="e.g. Coding Practice" />
+          <label>Category</label>
+          <input type="text" id="habitCategory" placeholder="e.g. Coding, Fitness, Learning" />
+          <label>Target Time (minutes)</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn btn-sm" onclick="adjustTarget(-15)">-15m</button>
+            <span id="targetDisplay">60</span> min
+            <button class="btn btn-sm" onclick="adjustTarget(15)">+15m</button>
+          </div>
+          <input type="number" id="habitTarget" value="60" min="1" style="margin-top:8px;" />
+          <button class="btn btn-primary" onclick="createHabit()" style="margin-top:8px;">Add Habit</button>
+          <p id="habitMsg"></p>
+        </div>
+
+        <div class="card section">
+          <h3>Daily Notes</h3>
+          <label>Date</label>
+          <input type="date" id="noteDate" />
+          <textarea id="noteContent" rows="4" placeholder="e.g. Solved 3 LeetCode problems today."></textarea>
+          <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+          <p id="noteMsg"></p>
+          <div class="pixel-divider"></div>
+          <h4>Recent Notes</h4>
+          <div id="notesList">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
 </body>
 </html>
