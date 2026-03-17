@@ -427,6 +427,40 @@
       }
     }
     loadTeam();
+
     
+
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+    }
+    function escapeAttr(str) {
+      return String(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    // Auth state handling
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        document.getElementById("authSection").classList.add("hidden");
+        document.getElementById("loggedInSection").classList.remove("hidden");
+        document.getElementById("userName").textContent = user.displayName || user.email;
+        syncUser(user);
+      }
+    });
+
+    async function handleLogin() {
+      try {
+        const result = await signInWithGoogle();
+        await syncUser(result.user);
+        window.location.href = "/dashboard.html";
+      } catch (e) {
+        document.getElementById("loginError").textContent = e.message;
+      }
+    }
+
+    function handleSignOut() {
+      signOut();
+    }
+  </script>
 </body>
 </html>
