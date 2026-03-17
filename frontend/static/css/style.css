@@ -1,0 +1,22 @@
+:root {
+  --bg-primary: #faf6f8;
+  --bg-secondary: #fff;
+  --bg-card: #fff;
+  --bg-hover: #fdf0f4;
+  --border-color: #e8c8d4;
+  --border-light: #f0dce4;
+  --accent: #d4788c;
+  --accent-light: #f5d0dc;
+  --accent-dark: #b85a6e;
+  --text-primary: #2c2433;
+  --text-secondary: #6b5e72;
+  --text-muted: #a8949e;
+  --shadow-sm: 0 1px 3px rgba(180, 120, 140, 0.08);
+  --shadow-md: 0 2px 8px rgba(180, 120, 140, 0.12);
+  --shadow-lg: 0 4px 16px rgba(180, 120, 140, 0.16);
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --font-base: 'Courier New', Courier, monospace;
+  --font-heading: 'Courier New', Courier, monospace;
+  --transition: 0.2s ease;
+}
