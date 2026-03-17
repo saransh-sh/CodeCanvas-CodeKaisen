@@ -385,3 +385,24 @@ label {
 .score-green  { color: #4caf50; }
 .score-yellow { color: #ff9800; }
 .score-red    { color: #e57373; }
+
+.quick-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  margin: 4px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-family: var(--font-base);
+  font-size: 0.85em;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.quick-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
