@@ -280,5 +280,46 @@
       input.focus();
     }
 
+     function retryLast() {
+      if (lastFailedMessage) sendMessage(lastFailedMessage);
+    }
+
+    async function buildCalendar() {
+      try {
+        const history = await apiFetch("/api/history");
+        const scoreMap = {};
+        history.forEach(h => { scoreMap[h.date] = h.score; });
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = now.getMonth();
+        const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        const grid = document.getElementById("calendarGrid");
+        const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        let html = days.map(d => `<div class="cal-day" style="font-weight:bold">${d}</div>`).join("");
+
+        for (let i = 0; i < firstDay; i++) {
+          html += `<div class="cal-day cal-empty"></div>`;
+        }
+
+        for (let d = 1; d <= daysInMonth; d++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+          const score = scoreMap[dateStr];
+          let cls = "cal-empty";
+          if (score !== undefined) {
+            cls = score >= 70 ? "cal-green" : score >= 40 ? "cal-yellow" : "cal-red";
+          }
+          html += `<div class="cal-day ${cls}" title="${score !== undefined ? score.toFixed(1)+"%" : "No data"}">${d}</div>`;
+        }
+        grid.innerHTML = html;
+      } catch (_) {
+        document.getElementById("calendarGrid").textContent = "Could not load calendar.";
+      }
+    }
+
+    
+
 </body>
 </html>
