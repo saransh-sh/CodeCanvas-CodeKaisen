@@ -381,3 +381,7 @@ label {
 .fill-red    { background: #e57373; }
 .fill-yellow { background: #ffb74d; }
 .fill-green  { background: #81c784; }
+
+.score-green  { color: #4caf50; }
+.score-yellow { color: #ff9800; }
+.score-red    { color: #e57373; }
