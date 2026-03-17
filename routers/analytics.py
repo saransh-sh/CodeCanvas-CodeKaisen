@@ -14,7 +14,6 @@ def today_stats(uid: str = Depends(get_uid), db=Depends(get_db)):
     )
     habits = list(db.collection("users").document(uid).collection("habits").stream())
 
-    # map habit name -> how many mins done today
     done_map = {}
     for log in logs:
         d = log.to_dict()
