@@ -164,5 +164,39 @@ const today = new Date().toISOString().split("T")[0];
         document.getElementById("habitList").textContent = "Error loading habits.";
       }
     }
+
+    async function createHabit() {
+      const name = document.getElementById("habitName").value.trim();
+      const category = document.getElementById("habitCategory").value.trim();
+      const target_minutes = parseInt(document.getElementById("habitTarget").value) || 60;
+      const msgEl = document.getElementById("habitMsg");
+      msgEl.className = "";
+      if (!name) { msgEl.textContent = "Habit name required."; return; }
+
+      // Check for duplicate habit in the same category
+      const duplicate = cachedHabits.some(h =>
+        h.name.toLowerCase() === name.toLowerCase() &&
+        (h.category || "").toLowerCase() === category.toLowerCase()
+      );
+      if (duplicate) {
+        msgEl.textContent = "A habit with this name already exists in this category.";
+        msgEl.className = "duplicate-warning";
+        return;
+      }
+
+      try {
+        await apiFetch("/api/habits", {
+          method: "POST",
+          body: JSON.stringify({ name, category, target_minutes }),
+        });
+        msgEl.textContent = "Habit created!";
+        document.getElementById("habitName").value = "";
+        document.getElementById("habitCategory").value = "";
+        await loadHabits();
+      } catch (e) {
+        msgEl.textContent = e.message;
+      }
+    }
+    
 </body>
 </html>
