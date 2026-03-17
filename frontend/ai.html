@@ -247,5 +247,38 @@
       input.disabled = true;
       document.getElementById("sendBtn").disabled = true;
 
+       const typingId = "typing_" + Date.now();
+      chatWindow.innerHTML += `<div class="msg-ai" id="${typingId}"><span class="bubble-ai thinking">Thinking…</span></div>`;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+
+      try {
+        const data = await apiFetch("/api/ai/chat", {
+          method: "POST",
+          body: JSON.stringify({ message }),
+        });
+        const providerLabel = data.provider ? ` <span style="font-size:0.7em;color:var(--text-muted);">(${data.provider})</span>` : "";
+        document.getElementById(typingId).outerHTML =
+          `<div class="msg-ai"><span class="bubble-ai">${escapeHtml(data.response)}${providerLabel}</span></div>`;
+      } catch (e) {
+        lastFailedMessage = message;
+        let errMsg;
+        const raw = e.message || String(e);
+        if (raw.includes("503") || raw.includes("No AI provider")) {
+          errMsg = "No AI provider configured. Please set OPENROUTER_API_KEY in your .env file.";
+        } else if (raw.includes("502") || raw.includes("unavailable")) {
+          errMsg = "AI service temporarily unavailable. Please try again in a moment.";
+        } else {
+          errMsg = "Something went wrong. Please try again.";
+        }
+        document.getElementById(typingId).outerHTML =
+          `<div class="msg-ai"><span class="bubble-ai" style="color:var(--accent-dark);">${escapeHtml(errMsg)}<button class="retry-btn" onclick="retryLast()">Retry</button></span></div>`;
+      }
+
+      input.disabled = false;
+      document.getElementById("sendBtn").disabled = false;
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+      input.focus();
+    }
+
 </body>
 </html>
