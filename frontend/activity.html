@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Activity – Kaizen AI</title>
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="stylesheet" href="static/css/style.css" />
   <style>
     .habit-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding: 6px 0; }
     .log-item { border-bottom: 1px solid var(--border-light); padding: 4px 0; }
@@ -34,5 +34,33 @@
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
     </div>
+
+     <h2>Activity &amp; Habits</h2>
+
+    <div class="grid-2">
+    
+      <div>
+        <div class="card">
+          <h3>My Habits</h3>
+          <div id="habitList">Loading…</div>
+        </div>
+
+        <div class="card section">
+          <h3>Log Activity</h3>
+          <label>Habit</label>
+          <select id="logHabitSelect"><option value="">-- select --</option></select>
+          <label>Minutes Spent</label>
+          <input type="number" id="logMinutes" min="1" value="30" />
+          <label>Date</label>
+          <input type="date" id="logDate" />
+          <button class="btn btn-primary" onclick="logActivity()">Log Activity</button>
+          <p id="logMsg"></p>
+        </div>
+
+        <div class="card section">
+          <h3>Today's Logs</h3>
+          <div id="todayLogs">Loading…</div>
+        </div>
+      </div>
 </body>
 </html>
