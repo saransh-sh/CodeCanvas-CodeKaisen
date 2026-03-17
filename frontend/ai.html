@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/static/css/style.css" />    
   <style>
 
-     #chatWindow {
+    #chatWindow {
       border: 2px solid var(--border-color);
       padding: 12px;
       height: 360px;
@@ -39,7 +39,33 @@
       font-size: 0.9em;
     }
 
+    .send-row { display: flex; gap: 8px; margin-top: 8px; }
+    .send-row input { flex: 1; }
+
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-day {
+      border: 1px solid var(--border-color);
+      text-align: center;
+      padding: 4px;
+      font-size: 0.75em;
+      cursor: default;
+      border-radius: var(--radius-sm);
+    }
+
+    .cal-green  { background: #81c784; }
+    .cal-yellow { background: #ffb74d; }
+    .cal-red    { background: #e57373; }
+    .cal-empty  { background: var(--bg-primary); }
+
     
+
+
   </style>
 </head>
 <body>
