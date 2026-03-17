@@ -197,6 +197,16 @@ const today = new Date().toISOString().split("T")[0];
         msgEl.textContent = e.message;
       }
     }
+
+
+     async function deleteHabit(id) {
+      if (!confirm("Delete this habit?")) return;
+      try {
+        await apiFetch(`/api/habits/${id}`, { method: "DELETE" });
+        await loadHabits();
+      } catch (e) { alert(e.message); }
+    }
+
     
 </body>
 </html>
