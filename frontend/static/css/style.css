@@ -157,3 +157,24 @@ width: auto;
   border-color: var(--accent);
   color: var(--accent-dark);
 }
+
+.card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  padding: 18px;
+  box-shadow: 0 6px 16px rgba(44, 36, 51, 0.06);
+  transition: all var(--transition);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card h3 {
+  margin: 0 0 8px 0;
+  font-size: 1em;
+  color: var(--accent-dark);
+  letter-spacing: 0.3px;
+}
