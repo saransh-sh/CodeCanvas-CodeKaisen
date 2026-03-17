@@ -385,5 +385,23 @@
       });
     })();
 
+       async function loadKaizenGifs(id, type) {
+  try {
+    const res = await fetch("/assets/mascots.json");
+    const data = await res.json();
+
+    const el = document.getElementById(id);
+
+    if (data[type]) {
+      el.src = data[type];
+    } else {
+      el.src = data["fallback"];
+    }
+  } catch (err) {
+    console.error("Mascot load failed:", err);
+  }
+} 
+loadKaizenGifs("heroMascot", "landing");
+loadKaizenGifs("kaizenLogo", "logo");
 </body>
 </html>
