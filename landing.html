@@ -140,6 +140,58 @@
       margin-top: 4px;
     }
 
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .dev-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding: 20px 16px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+    }
+    .dev-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-light);
+      background: var(--bg-primary);
+    }
+    .dev-name {
+      margin: 0;
+      font-size: 1.05em;
+      color: var(--text-primary);
+    }
+    .dev-role {
+      margin: 0;
+      font-size: 0.8em;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--accent-dark);
+      font-weight: bold;
+    }
+    .dev-quote {
+      margin: 0;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 0.88em;
+      line-height: 1.5;
+    }
+    .dev-bio {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.82em;
+      line-height: 1.4;
+    }
+
     
   </style>
 </head>
