@@ -52,7 +52,33 @@
       font-size: 0.8em;
       margin: 0 0 6px;
     }
+
+        .auth-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      background: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .auth-section { margin: 0; }
+    #loginError { color: #d32f2f; font-size: 0.85em; margin-top: 4px; }
+    .logged-in-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+
     
+
   </style>
 </head>
 <body>
