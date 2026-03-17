@@ -406,3 +406,8 @@ label {
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
+
+.streak-info {
+  font-size: 0.85em;
+  color: var(--text-muted);
+}
