@@ -19,6 +19,35 @@
         <a href="/pomodoro.html">Pomodoro</a>
       </div>
     </header>
+
+     <main class="section-stack">
+      <section class="hero-card animate-fade-in">
+        <div class="hero-mascot">
+  <img src="/assets/mascots/landing.png" alt="Kaizen mascot" id="heroMascot" />
+</div>
+
+<div class="hero-content">
+          <p class="eyebrow"></p>
+          <h1>Small daily improvements, massive results.</h1>
+          <p>Kaizen AI keeps habits, timers, analytics, and coaching inside a single, balanced workspace built on a clean card system.</p>
+          <div class="auth-card">
+            <div class="auth-section" id="authSection">
+              <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+                Login with Google
+              </button>
+              <p id="loginError"></p>
+            </div>
+            <div class="auth-section hidden" id="loggedInSection">
+              <div class="logged-in-bar">
+                <span>Signed in as <strong id="userName"></strong></span>
+                <button class="btn btn-primary" onclick="window.location.href='/dashboard.html'">
+                  Go to Dashboard
+                </button>
+                <button class="btn btn-signout" onclick="handleSignOut()">Sign Out</button>
+              </div>
+            </div>
+          </div>
+
 </div>
 </body>
 </html>
