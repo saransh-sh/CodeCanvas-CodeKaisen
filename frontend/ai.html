@@ -232,5 +232,20 @@
       }
     }
 
+    async function sendMessage(retryText) {
+      const input = document.getElementById("userInput");
+      const message = retryText || input.value.trim();
+      if (!message) return;
+
+      const chatWindow = document.getElementById("chatWindow");
+
+      if (!retryText) {
+        chatWindow.innerHTML += `<div class="msg-user"><span class="bubble-user">${escapeHtml(message)}</span></div>`;
+        input.value = "";
+      }
+      lastFailedMessage = null;
+      input.disabled = true;
+      document.getElementById("sendBtn").disabled = true;
+
 </body>
 </html>
