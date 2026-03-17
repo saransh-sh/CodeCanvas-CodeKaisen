@@ -20,3 +20,21 @@
   --font-heading: 'Courier New', Courier, monospace;
   --transition: 0.2s ease;
 }
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-base);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent-dark); text-decoration: none; }
+a:hover { color: var(--accent); }
+
+.hidden { display: none !important; }
+
