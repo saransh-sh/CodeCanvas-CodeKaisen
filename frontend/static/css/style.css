@@ -178,3 +178,15 @@ width: auto;
   color: var(--accent-dark);
   letter-spacing: 0.3px;
 }
+
+.section {
+  margin: 24px 0;
+}
+
+.section-title {
+  font-size: 1.15em;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
