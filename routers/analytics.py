@@ -14,6 +14,7 @@ def today_stats(uid: str = Depends(get_uid), db=Depends(get_db)):
     )
     habits = list(db.collection("users").document(uid).collection("habits").stream())
 
+    # map habit name -> how many mins done today
     done_map = {}
     for log in logs:
         d = log.to_dict()
@@ -74,6 +75,7 @@ def time_distribution(uid: str = Depends(get_uid), db=Depends(get_db)):
 
 @router.get("/analytics/radar")
 def radar_stats(uid: str = Depends(get_uid), db=Depends(get_db)):
+  
     today = date.today()
     week_start_date = today - timedelta(days=6)
     week_start = str(week_start_date)
@@ -107,6 +109,8 @@ def radar_stats(uid: str = Depends(get_uid), db=Depends(get_db)):
         labels.append(name)
         data.append(score)
 
+  
+    summaries = list(
         db.collection("users").document(uid).collection("daily_summaries")
         .where("summary_date", ">=", week_start)
         .stream()
