@@ -411,3 +411,15 @@ label {
   font-size: 0.85em;
   color: var(--text-muted);
 }
+
+.pixel-divider {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--border-color) 0px,
+    var(--border-color) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  margin: 16px 0;
+}
