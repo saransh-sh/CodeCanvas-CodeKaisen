@@ -30,3 +30,10 @@ async function signOut() {
     window.location.href = "/landing.html";
   });
 }
+
+async function getIdToken() {
+  await authReady;
+  const user = firebase.auth().currentUser;
+  if (!user) throw new Error("Not authenticated");
+  return user.getIdToken();
+}
