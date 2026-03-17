@@ -125,5 +125,44 @@ const today = new Date().toISOString().split("T")[0];
       await loadTodayLogs();
       await loadNotes();
     });
+
+    async function loadHabits() {
+      try {
+        const habits = await apiFetch("/api/habits");
+        cachedHabits = habits;
+        const listEl = document.getElementById("habitList");
+        const selectEl = document.getElementById("logHabitSelect");
+        selectEl.innerHTML = '<option value="">-- select --</option>';
+        if (!habits.length) { listEl.textContent = "No habits yet."; return; }
+
+        const groups = {};
+        habits.forEach(h => {
+          const cat = h.category || "Uncategorized";
+          if (!groups[cat]) groups[cat] = [];
+          groups[cat].push(h);
+        });
+
+        let html = "";
+        for (const [category, items] of Object.entries(groups)) {
+          html += `<div class="category-header">${category}</div>`;
+          html += items.map(h =>
+            `<div class="habit-item">
+              <span>• <strong>${h.name}</strong> – ${h.target_minutes} min</span>
+              <button class="btn btn-sm" onclick="deleteHabit('${h.id}')">✕</button>
+            </div>`
+          ).join("");
+        }
+        listEl.innerHTML = html;
+
+        habits.forEach(h => {
+          const opt = document.createElement("option");
+          opt.value = h.id;
+          opt.textContent = h.name;
+          selectEl.appendChild(opt);
+        });
+      } catch (e) {
+        document.getElementById("habitList").textContent = "Error loading habits.";
+      }
+    }
 </body>
 </html>
