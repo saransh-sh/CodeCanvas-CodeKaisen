@@ -192,7 +192,27 @@
       line-height: 1.4;
     }
 
-    
+        
+    .hero-mascot {
+  flex: 0 0 140px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-mascot img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+}
+
+/* mobile fix */
+@media (max-width: 768px) {
+  .hero-card {
+    flex-direction: column;
+    text-align: center;
+  }
+}
   </style>
 </head>
 <body>
