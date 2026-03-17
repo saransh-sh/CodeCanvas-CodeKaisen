@@ -259,5 +259,17 @@ const today = new Date().toISOString().split("T")[0];
         await loadNotes();
       } catch (e) { document.getElementById("noteMsg").textContent = e.message; }
     }
+
+    async function loadNotes() {
+      try {
+        const notes = await apiFetch("/api/notes");
+        const el = document.getElementById("notesList");
+        if (!notes.length) { el.textContent = "No notes yet."; return; }
+        el.innerHTML = notes.slice(0, 5).map(n =>
+          `<div class="log-item"><strong>${n.note_date}</strong>: ${n.content}</div>`
+        ).join("");
+      } catch (_) {}
+    }
+  </script
 </body>
 </html>
