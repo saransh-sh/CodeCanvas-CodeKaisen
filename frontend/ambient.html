@@ -19,6 +19,25 @@
       color: var(--text-secondary);
     }
 
+     .mascot-topleft .mascot-container {
+      justify-content: flex-start;
+    }
+    .ambient-panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+    .ambient-panels .clock-panel {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+    @media (max-width: 768px) {
+      .ambient-panels { grid-template-columns: 1fr; }
+      .ambient-panels .clock-panel { grid-column: auto; }
+    }
+
+
     </style>
 
 </head>
