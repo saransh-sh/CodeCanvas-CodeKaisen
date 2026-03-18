@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <style>
+    blockquote {
+      margin: 8px 0;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent-light);
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .dashboard-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard-mascot {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard-mascot img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .dashboard-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.dashboard-mascot img {
+  transition: transform 0.3s ease;
+}
+
+.dashboard-mascot img:hover {
+  transform: scale(1.1) rotate(-2deg);
+}
+
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="/assets/logo.gif" id="kaizenLogo" />
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html" class="active">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <span class="streak-info">Streak: <strong id="streak">–</strong> · <span id="userInfo"></span></span>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+<div class="section dashboard-hero">
+  <div class="dashboard-mascot">
+    <img id="dashboardMascot" />
+  </div>
+  <div>
+    <h2 id="greeting">Hello!</h2>
+    <p style="color:var(--text-secondary); margin:0;">Ready to improve today?</p>
+  </div>
+
+</div>
+    <div class="section">
+      <h3>Quick Access</h3>
+      <button class="quick-btn" onclick="location.href='/activity.html'">Add Habit</button>
+      <button class="quick-btn" onclick="location.href='/pomodoro.html'">Focus Mode</button>
+      <button class="quick-btn" onclick="location.href='/ai.html'">AI Assistant</button>
+      <button class="quick-btn" onclick="location.href='/graphs.html'">Analytics</button>
+      <button class="quick-btn" onclick="location.href='/ambient.html'">Ambient Mode</button>
+      <button class="quick-btn" onclick="location.href='/profile.html'">Profile</button>
+    </div>
+     <div class="section">
+      <h3>Today's Progress</h3>
+      <div id="progressDots">Loading…</div>
+    </div>
+
+    <div class="section grid-2">
+      <div class="card">
+        <h3>Time Distribution (This Week)</h3>
+        <canvas id="pieChart" width="250" height="250"></canvas>
+      </div>
+      <div class="card">
+        <h3>Motivation</h3>
+        <blockquote id="quote">Small daily improvements lead to massive results.</blockquote>
+        <p><em>– Kaizen Philosophy</em></p>
+        <div class="pixel-divider"></div>
+        <h4>Weekly Productivity</h4>
+        <canvas id="barChart" width="250" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script>
+    const quotes = [
+      "Small daily improvements lead to massive results.",
+      "The journey of a thousand miles begins with a single step.",
+      "Discipline is choosing between what you want now and what you want most.",
+      "Success is the sum of small efforts repeated day in and day out.",
+      "Consistency beats intensity.",
+    ];
+    document.getElementById("quote").textContent = quotes[Math.floor(Math.random() * quotes.length)];
+
+    async function loadDashboardMascot() {
+      await loadKaizenGifs("dashboardMascot", "dashboard");
+    }
+    loadDashboardMascot();
+     const VIBRANT_COLORS = [
+      "#6366f1", "#f43f5e", "#10b981", "#f59e0b", "#8b5cf6",
+      "#ec4899", "#14b8a6", "#ef4444", "#3b82f6", "#84cc16",
+    ];
+
+    requireAuth(async (user) => {
+      document.getElementById("userInfo").textContent = user.displayName || user.email;
+      document.getElementById("greeting").textContent = `Hello, ${(user.displayName || "there").split(" ")[0]}!`;
+
+      try {
+        const streakData = await apiFetch(`/api/users/${user.uid}/streak`, { method: "PUT" });
+        document.getElementById("streak").textContent = streakData.streak || 0;
+      } catch (_) {
+        try {
+          const userData = await fetch(`/api/users/${user.uid}`).then(r => r.json());
+          document.getElementById("streak").textContent = userData.streak || 0;
+        } catch (_) {}
+      }
+            try {
+        const data = await apiFetch("/api/analytics/today");
+        const dotsEl = document.getElementById("progressDots");
+        if (!data.progress.length) {
+          dotsEl.textContent = "No habits yet. Add some on the Activity page!";
+          return;
+        }
+        dotsEl.innerHTML = data.progress.map(h => {
+          const pct = h.target > 0 ? Math.min((h.spent / h.target) * 100, 100) : 0;
+          return `<div class="progress-item">
+            <span class="progress-dot dot-${h.status}"></span>
+            <strong>${h.name}</strong>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill fill-${h.status}" style="width:${pct}%"></div>
+            </div>
+            <span class="text-sm text-muted">${h.spent}/${h.target} min</span>
+          </div>`;
+        }).join("");
+      } catch (e) {
+        document.getElementById("progressDots").textContent = "Could not load progress.";
+      }
+            try {
+        const dist = await apiFetch("/api/analytics/distribution");
+        if (dist.length) {
+          new Chart(document.getElementById("pieChart"), {
+            type: "doughnut",
+            data: {
+              labels: dist.map(d => d.habit),
+              datasets: [{
+                data: dist.map(d => d.minutes),
+                backgroundColor: VIBRANT_COLORS.slice(0, dist.length),
+                borderWidth: 2,
+                borderColor: "#fff",
+              }],
+            },
+            options: {
+              plugins: {
+                legend: { position: "bottom", labels: { padding: 12, usePointStyle: true } },
+                tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} min` } },
+              },
+            },
+          });
+        }
+      } catch (_) {}
+
+            try {
+        const weekly = await apiFetch("/api/analytics/weekly");
+        if (weekly.length) {
+          new Chart(document.getElementById("barChart"), {
+            type: "bar",
+            data: {
+              labels: weekly.map(d => d.date.slice(5)),
+              datasets: [{
+                label: "Score %",
+                data: weekly.map(d => d.score),
+                backgroundColor: weekly.map(d =>
+                  d.score >= 70 ? "#81c784" : d.score >= 40 ? "#ffb74d" : "#e57373"
+                ),
+                borderRadius: 4,
+              }],
+            },
+            options: {
+              scales: { y: { min: 0, max: 100, grid: { color: "#f0f0f0" } }, x: { grid: { display: false } } },
+              plugins: { legend: { display: false } },
+            },
+          });
+        }
+      } catch (_) {}
+    });
+  </script>
+</body>
+</html>
+

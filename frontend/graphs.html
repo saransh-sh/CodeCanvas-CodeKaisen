@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graphs – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .grade { font-size: 1.8em; font-weight: bold; }
+    .grade-A { color: #27ae60; }
+    .grade-B { color: #2980b9; }
+    .grade-C { color: #f39c12; }
+    .grade-D { color: #e74c3c; }
+    #radarEmpty { color: var(--text-muted); font-style: italic; display: none; }
+    .grades-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .grade-item { text-align: center; padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-card); border: 1px solid var(--border-light); }
+    .grade-label { font-size: 0.8em; color: var(--text-muted); }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 12px 0 8px; }
+    .page-header h2 { margin: 0; }
+    .page-subtitle { margin: 0; color: var(--text-secondary); }
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin: 8px 0 20px;
+    }
+    .analytics-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .analytics-card h3 { margin: 0; }
+    .chart-shell {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      background: var(--bg-secondary);
+    }
+  </style>
+  </head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html" class="active">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+        <div class="page-header">
+      <div>
+        <h2>Analytics &amp; Graphs</h2>
+        <p class="page-subtitle">A comprehensive breakdown of system-tracked activity and performance trends.</p>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="card analytics-card">
+        <h3>Time distribution (7 days)</h3>
+        <div class="chart-shell">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Weekly productivity score</h3>
+        <div class="chart-shell">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Habit completion trend</h3>
+        <div class="chart-shell">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Your habits (7 days)</h3>
+        <div class="chart-shell">
+          <canvas id="radarChart"></canvas>
+        </div>
+        <p id="radarEmpty">No habits yet. <a href="/activity.html">Add some habits</a> to see your radar.</p>
+        
+      </div>
+    </div>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="static/js/auth.js"></script>
+    <script>
+    const PALETTE = [
+      "#d4788c", "#b85a6e", "#e8a0b0", "#c0608c", "#9b3a5c",
+      "#e8b4c0", "#d46a7c", "#f0c8d4", "#a84060", "#cc5070",
+    ];
+    loadKaizenGifs();
+
+    function scoreToGrade(score) {
+      if (score >= 80) return "A";
+      if (score >= 60) return "B";
+      if (score >= 40) return "C";
+      return "D";
+    }
+
+    requireAuth(async (user) => {
+      try {
+        const dist = await apiFetch("/api/analytics/distribution");
+        new Chart(document.getElementById("pieChart"), {
+          type: "doughnut",
+          data: {
+            labels: dist.map(d => d.habit),
+            datasets: [{
+              data: dist.map(d => d.minutes),
+               backgroundColor: PALETTE.slice(0, dist.length),
+               borderWidth: 1,
+               borderColor: "#e6dfd6",
+               hoverOffset: 6,
+            }],
+          },
+          options: {
+            plugins: {
+              legend: { position: "bottom", labels: { padding: 12, usePointStyle: true, font: { size: 12 } } },
+              tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} min` } },
+            },
+          },
+        });
+      } catch (_) {}
+
+            try {
+        const weekly = await apiFetch("/api/analytics/weekly");
+        const labels = weekly.map(d => d.date.slice(5));
+        const scores = weekly.map(d => d.score);
+        const minutes = weekly.map(d => d.completed_minutes);
+
+        new Chart(document.getElementById("barChart"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{
+  label: "Productivity Score %",
+  data: scores,
+  backgroundColor: scores.map(score => {
+    if (score >= 75) return "#22c55e";   
+    if (score >= 40) return "#f59e0b";   
+    return "#ef4444";                    
+  }),
+  borderColor: scores.map(score => {
+    if (score >= 75) return "#16a34a";
+    if (score >= 40) return "#d97706";
+    return "#dc2626";
+  }),
+  borderWidth: 1,
+  borderRadius: 8,
+  borderSkipped: false,
+}],
+          },
+          options: {
+            scales: {
+              y: { min: 0, max: 100, grid: { color: "#f0f0f0" } },
+              x: { grid: { display: false } },
+            },
+            plugins: {
+              tooltip: { callbacks: { label: ctx => `Score: ${ctx.parsed.y}%` } },
+            },
+          },
+        });
+
+                const lineCtx = document.getElementById("lineChart").getContext("2d");
+         const gradient = lineCtx.createLinearGradient(0, 0, 0, 300);
+         gradient.addColorStop(0, "rgba(212, 120, 140, 0.4)");
+         gradient.addColorStop(1, "rgba(212, 120, 140, 0.05)");
+
+        new Chart(lineCtx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Minutes Completed",
+              data: minutes,
+               borderColor: "#d4788c",
+               backgroundColor: gradient,
+               fill: true,
+               tension: 0.3,
+               pointBackgroundColor: "#b85a6e",
+               pointBorderColor: "#fff",
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+            }],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true, grid: { color: "#f0f0f0" } },
+              x: { grid: { display: false } },
+            },
+            plugins: {
+              tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} min` } },
+            },
+          },
+        });
+      } catch (_) {}
+
+            try {
+        const radar = await apiFetch("/api/analytics/radar");
+        if (!radar.labels || !radar.labels.length) {
+          document.getElementById("radarChart").style.display = "none";
+          document.getElementById("radarEmpty").style.display = "block";
+        } else {
+          new Chart(document.getElementById("radarChart"), {
+            type: "radar",
+            data: {
+              labels: radar.labels,
+              datasets: [{
+                label: "Your Habits",
+                data: radar.data,
+                 borderColor: "#d4788c",
+                 backgroundColor: "rgba(212, 120, 140, 0.2)",
+                 pointBackgroundColor: "#b85a6e",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                borderWidth: 2,
+              }],
+            },
+            options: {
+              scales: {
+                r: {
+                  min: 0, max: 100,
+                  ticks: { stepSize: 20, backdropColor: "transparent", font: { size: 10 } },
+                  grid: { color: "rgba(232, 200, 212, 0.6)" },
+                  angleLines: { color: "rgba(212, 120, 140, 0.4)" },
+                  pointLabels: { font: { size: 12, weight: "bold" }, color: "#2c2433" },
+                },
+              },
+              plugins: { legend: { display: false } },
+            },
+          });
+document.getElementById("grades").innerHTML = "";
+        }
+      } catch (_) {}
+    });
+</script>
+</div>
+</body>
+</html>

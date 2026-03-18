@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>History – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+
+    <style>
+    .day-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      padding: 10px 4px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .day-row:hover { background: var(--bg-hover); }
+    .detail-panel {
+      border: 2px solid var(--border-color);
+      padding: 16px;
+      margin-top: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-sm);
+    }
+        .detail-panel h3 { color: var(--accent-dark); }
+    .detail-panel h4 { color: var(--text-secondary); margin: 12px 0 4px; }
+    ul { margin: 4px 0; padding-left: 20px; }
+    .history-page-header {
+      margin: 12px 0 8px;
+    }
+    .history-page-header h2 { margin: 0 0 4px; }
+    .history-page-header p { margin: 0; color: var(--text-secondary); }
+    .history-list-card {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-sm);
+      padding: 8px 12px;
+    }
+    .detail-panel { margin-top: 18px; }
+    .history-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.history-mascot {
+  flex: 0 0 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.history-mascot img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+}
+@media (max-width: 768px) {
+  .history-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.history-mascot img {
+  transition: transform 0.3s ease;
+}
+
+.history-mascot img:hover {
+  transform: scale(1.1) rotate(-2deg);
+}
+
+    </style>
+  </head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html" class="active">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+    <div class="history-page-header section history-hero">
+
+  <div class="history-mascot">
+    <img id="historyMascot" />
+  </div>
+
+  <div>
+    <h2>History</h2>
+    <p>Select a date to open the matching detail card.</p>
+  </div>
+
+</div>
+
+    <div class="history-list-card" id="historyList">Loading…</div>
+
+    <div class="detail-panel hidden" id="detailPanel">
+      <h3 id="detailDate"></h3>
+      <p>Productivity Score: <strong id="detailScore"></strong></p>
+      <h4>Completed Tasks</h4>
+      <ul id="completedList"></ul>
+      <h4>Pending Tasks</h4>
+      <ul id="pendingList"></ul>
+      <h4>Note</h4>
+      <p id="detailNote"></p>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="static/js/auth.js"></script>
+  <script>
+    async function loadMascot() {
+      await loadKaizenGifs("historyMascot", "history");
+    }
+    loadMascot();
+
+        function scoreClass(score) {
+      if (score >= 70) return "score-green";
+      if (score >= 40) return "score-yellow";
+      return "score-red";
+    }
+
+    requireAuth(async (user) => {
+      try {
+        const history = await apiFetch("/api/history");
+        const listEl = document.getElementById("historyList");
+        if (!history.length) { listEl.textContent = "No history yet. Log some activities first!"; return; }
+        listEl.innerHTML = history.map(h =>
+          `<div class="day-row" onclick="loadDay('${h.date}')">
+            <span><strong>${h.date}</strong></span>
+            <span>${h.completed_minutes} / ${h.target_minutes} min</span>
+            <span class="${scoreClass(h.score)}"><strong>${h.score.toFixed(1)}%</strong></span>
+          </div>`
+        ).join("");
+      } catch (e) {
+        document.getElementById("historyList").textContent = "Error loading history.";
+      }
+    });
+
+        async function loadDay(dateStr) {
+      try {
+        const data = await apiFetch(`/api/history/${dateStr}`);
+        document.getElementById("detailPanel").classList.remove("hidden");
+        document.getElementById("detailDate").textContent = dateStr;
+        document.getElementById("detailScore").textContent = `${data.score.toFixed(1)}%`;
+        document.getElementById("completedList").innerHTML =
+          (data.completed_tasks.length ? data.completed_tasks : ["None"]).map(t => `<li>${t}</li>`).join("");
+        document.getElementById("pendingList").innerHTML =
+          (data.pending_tasks.length ? data.pending_tasks : ["None"]).map(t => `<li>${t}</li>`).join("");
+        document.getElementById("detailNote").textContent = data.note || "No note for this day.";
+        document.getElementById("detailPanel").scrollIntoView({ behavior: "smooth" });
+      } catch (e) {
+        alert("Could not load details: " + e.message);
+      }
+    }
+
+  </script>
+
+</body>
+</html>
