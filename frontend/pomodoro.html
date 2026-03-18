@@ -228,6 +228,22 @@
       }, 1000);
     }
 
+        function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      clearInterval(intervalId);
+      document.getElementById("startBtn").disabled = false;
+      document.getElementById("pauseBtn").disabled = true;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      secondsLeft = settings.workMinutes * 60;
+      isFocus = true;
+      sessionsComplete = 0;
+      document.getElementById("sessionInfo").textContent = "Complete a focus session to earn a reward";
+      updateDisplay();
+    }
 
 
 
