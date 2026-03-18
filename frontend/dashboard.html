@@ -65,4 +65,20 @@
       </div>
     </div>
   </div>
+ <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script>
+    const quotes = [
+      "Small daily improvements lead to massive results.",
+      "The journey of a thousand miles begins with a single step.",
+      "Discipline is choosing between what you want now and what you want most.",
+      "Success is the sum of small efforts repeated day in and day out.",
+      "Consistency beats intensity.",
+    ];
+    document.getElementById("quote").textContent = quotes[Math.floor(Math.random() * quotes.length)];
 
+    async function loadDashboardMascot() {
+      await loadKaizenGifs("dashboardMascot", "dashboard");
+    }
+    loadDashboardMascot();
