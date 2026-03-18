@@ -90,7 +90,7 @@
     requireAuth(async (user) => {
       document.getElementById("userInfo").textContent = user.displayName || user.email;
       document.getElementById("greeting").textContent = `Hello, ${(user.displayName || "there").split(" ")[0]}!`;
-      
+
       try {
         const streakData = await apiFetch(`/api/users/${user.uid}/streak`, { method: "PUT" });
         document.getElementById("streak").textContent = streakData.streak || 0;
@@ -99,5 +99,26 @@
           const userData = await fetch(`/api/users/${user.uid}`).then(r => r.json());
           document.getElementById("streak").textContent = userData.streak || 0;
         } catch (_) {}
+      }
+            try {
+        const data = await apiFetch("/api/analytics/today");
+        const dotsEl = document.getElementById("progressDots");
+        if (!data.progress.length) {
+          dotsEl.textContent = "No habits yet. Add some on the Activity page!";
+          return;
+        }
+        dotsEl.innerHTML = data.progress.map(h => {
+          const pct = h.target > 0 ? Math.min((h.spent / h.target) * 100, 100) : 0;
+          return `<div class="progress-item">
+            <span class="progress-dot dot-${h.status}"></span>
+            <strong>${h.name}</strong>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill fill-${h.status}" style="width:${pct}%"></div>
+            </div>
+            <span class="text-sm text-muted">${h.spent}/${h.target} min</span>
+          </div>`;
+        }).join("");
+      } catch (e) {
+        document.getElementById("progressDots").textContent = "Could not load progress.";
       }
 
