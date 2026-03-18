@@ -119,7 +119,7 @@
       if (mode === "lofi") {
         document.getElementById("minimalMode").classList.add("hidden");
         document.getElementById("lofiMode").classList.remove("hidden");
-        // Load custom video if saved
+
         const videoUrl = localStorage.getItem("kaizen_ambient_video");
         if (videoUrl) {
           const video = document.getElementById("bgVideo");
@@ -185,7 +185,37 @@
       document.getElementById("noiseVolume").value = val;
       document.getElementById("lofiVolume").value  = val;
     }
-    
+        let customAudioEl = null;
+    let customAudioPlaying = false;
+
+    function saveCustomAudio() {
+      const url = document.getElementById("customAudioUrl").value.trim();
+      if (url) {
+        localStorage.setItem("kaizen_ambient_audio", url);
+        document.getElementById("audioMsg").textContent = "Audio URL saved!";
+      } else {
+        localStorage.removeItem("kaizen_ambient_audio");
+        document.getElementById("audioMsg").textContent = "Audio URL cleared.";
+      }
+    }
+
+    function saveCustomVideo() {
+      const url = document.getElementById("customVideoUrl").value.trim();
+      if (url) {
+        localStorage.setItem("kaizen_ambient_video", url);
+        document.getElementById("videoMsg").textContent = "Video URL saved! Switch to LoFi mode to see it.";
+      } else {
+        localStorage.removeItem("kaizen_ambient_video");
+        document.getElementById("videoMsg").textContent = "Video URL cleared.";
+      }
+    }
+
+    function playCustomAudio() {
+      const audioUrl = localStorage.getItem("kaizen_ambient_audio");
+      if (!audioUrl) {
+        alert("No custom audio URL saved. Enter a URL above and click Save.");
+        return;
+      }
 
 
 
