@@ -105,6 +105,16 @@
     const savedVideoUrl = localStorage.getItem("kaizen_ambient_video");
     if (savedAudioUrl) document.getElementById("customAudioUrl").value = savedAudioUrl;
     if (savedVideoUrl) document.getElementById("customVideoUrl").value = savedVideoUrl;
+        function updateClocks() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString();
+      const dateStr = now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      document.getElementById("minimalClock").textContent = timeStr;
+      document.getElementById("minimalDate").textContent  = dateStr;
+      document.getElementById("lofiClock").textContent    = timeStr;
+    }
+    updateClocks();
+    setInterval(updateClocks, 1000);
 
 
 
