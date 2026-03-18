@@ -121,4 +121,27 @@
       } catch (e) {
         document.getElementById("progressDots").textContent = "Could not load progress.";
       }
+            try {
+        const dist = await apiFetch("/api/analytics/distribution");
+        if (dist.length) {
+          new Chart(document.getElementById("pieChart"), {
+            type: "doughnut",
+            data: {
+              labels: dist.map(d => d.habit),
+              datasets: [{
+                data: dist.map(d => d.minutes),
+                backgroundColor: VIBRANT_COLORS.slice(0, dist.length),
+                borderWidth: 2,
+                borderColor: "#fff",
+              }],
+            },
+            options: {
+              plugins: {
+                legend: { position: "bottom", labels: { padding: 12, usePointStyle: true } },
+                tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} min` } },
+              },
+            },
+          });
+        }
+      } catch (_) {}
 
