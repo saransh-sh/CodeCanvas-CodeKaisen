@@ -176,8 +176,46 @@
         });
       } catch (_) {}
 
-
-
+            try {
+        const radar = await apiFetch("/api/analytics/radar");
+        if (!radar.labels || !radar.labels.length) {
+          document.getElementById("radarChart").style.display = "none";
+          document.getElementById("radarEmpty").style.display = "block";
+        } else {
+          new Chart(document.getElementById("radarChart"), {
+            type: "radar",
+            data: {
+              labels: radar.labels,
+              datasets: [{
+                label: "Your Habits",
+                data: radar.data,
+                 borderColor: "#d4788c",
+                 backgroundColor: "rgba(212, 120, 140, 0.2)",
+                 pointBackgroundColor: "#b85a6e",
+                pointBorderColor: "#fff",
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                borderWidth: 2,
+              }],
+            },
+            options: {
+              scales: {
+                r: {
+                  min: 0, max: 100,
+                  ticks: { stepSize: 20, backdropColor: "transparent", font: { size: 10 } },
+                  grid: { color: "rgba(232, 200, 212, 0.6)" },
+                  angleLines: { color: "rgba(212, 120, 140, 0.4)" },
+                  pointLabels: { font: { size: 12, weight: "bold" }, color: "#2c2433" },
+                },
+              },
+              plugins: { legend: { display: false } },
+            },
+          });
+document.getElementById("grades").innerHTML = "";
+        }
+      } catch (_) {}
+    });
 </script>
+</div>
 </body>
 </html>
