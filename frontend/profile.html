@@ -154,7 +154,29 @@
         }
       } catch (_) {}
 
-      
+            const savedPhoto = localStorage.getItem("kaizen_mascot_url");
+      if (savedPhoto) {
+        document.getElementById("profilePhotoUrl").value = savedPhoto.startsWith("data:") ? "" : savedPhoto;
+        showPhotoPreview(savedPhoto);
+        applyAvatar(savedPhoto);
+      }
+    });
+
+    function handlePhotoUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        document.getElementById("profilePhotoUrl").value = "";
+        showPhotoPreview(dataUrl);
+        localStorage.setItem("kaizen_mascot_url", dataUrl);
+        document.getElementById("profilePhotoMsg").textContent = "Profile photo saved! It will appear across the app.";
+        applyAvatar(dataUrl);
+      };
+      reader.readAsDataURL(file);
+    }
+
 
 
 
