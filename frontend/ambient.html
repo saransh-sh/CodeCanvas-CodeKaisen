@@ -115,6 +115,23 @@
     }
     updateClocks();
     setInterval(updateClocks, 1000);
+        function switchMode(mode) {
+      if (mode === "lofi") {
+        document.getElementById("minimalMode").classList.add("hidden");
+        document.getElementById("lofiMode").classList.remove("hidden");
+        // Load custom video if saved
+        const videoUrl = localStorage.getItem("kaizen_ambient_video");
+        if (videoUrl) {
+          const video = document.getElementById("bgVideo");
+          video.querySelector("source").src = videoUrl;
+          video.load();
+          video.play().catch(() => {});
+        }
+      } else {
+        document.getElementById("lofiMode").classList.add("hidden");
+        document.getElementById("minimalMode").classList.remove("hidden");
+      }
+    }
 
 
 
