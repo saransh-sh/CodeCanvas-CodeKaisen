@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kaizen AI – Smart Habit Planner</title>
+   <link rel="stylesheet" href="static/css/style.css" />
 
   <style>
 
@@ -206,7 +207,7 @@
   object-fit: contain;
 }
 
-/* mobile fix */
+
 @media (max-width: 768px) {
   .hero-card {
     flex-direction: column;
@@ -220,20 +221,20 @@
 
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="/assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
-        <a href="/dashboard.html">Dashboard</a>
-        <a href="/ai.html">AI Chat</a>
-        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="ai.html">AI Chat</a>
+        <a href="pomodoro.html">Pomodoro</a>
       </div>
     </header>
 
      <main class="section-stack">
       <section class="hero-card animate-fade-in">
         <div class="hero-mascot">
-  <img src="/assets/mascots/landing.png" alt="Kaizen mascot" id="heroMascot" />
+  <img src="assets/mascots/landing.png" alt="Kaizen mascot" id="heroMascot" />
 </div>
 
 <div class="hero-content">
@@ -250,7 +251,7 @@
             <div class="auth-section hidden" id="loggedInSection">
               <div class="logged-in-bar">
                 <span>Signed in as <strong id="userName"></strong></span>
-                <button class="btn btn-primary" onclick="window.location.href='/dashboard.html'">
+                <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">
                   Go to Dashboard
                 </button>
                 <button class="btn btn-signout" onclick="handleSignOut()">Sign Out</button>
@@ -369,7 +370,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="/static/js/auth.js"></script>
+  <script src="static/js/auth.js"></script>
   <script>
     (function initScrollAnimations() {
       const observer = new IntersectionObserver((entries) => {
@@ -387,7 +388,7 @@
 
        async function loadKaizenGifs(id, type) {
   try {
-    const res = await fetch("/assets/mascots.json");
+    const res = await fetch("assets/mascots.json");
     const data = await res.json();
 
     const el = document.getElementById(id);
@@ -410,12 +411,12 @@
       const grid = document.getElementById("teamGrid");
       if (!grid) return;
       try {
-        const res = await fetch("/assets/developers.json");
+        const res = await fetch("assets/developers.json");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const devs = await res.json();
         grid.innerHTML = devs.map((dev, i) => `
           <div class="dev-card">
-            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='/assets/logo.png'" />
+            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='assets/logo.png'" />
             <p class="dev-role">${escapeHtml(dev.role || "")}</p>
             <h3 class="dev-name">${escapeHtml(dev.name)}</h3>
             <p class="dev-quote">&ldquo;${escapeHtml(dev.quote || "")}&rdquo;</p>
@@ -438,7 +439,6 @@
       return String(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
     }
 
-    // Auth state handling
     auth.onAuthStateChanged((user) => {
       if (user) {
         document.getElementById("authSection").classList.add("hidden");

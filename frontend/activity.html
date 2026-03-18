@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <style>
+    .habit-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding: 6px 0; }
+    .log-item { border-bottom: 1px solid var(--border-light); padding: 4px 0; }
+    .cat { color: var(--text-muted); font-size: 0.85em; }
+    .category-header { font-weight: bold; margin-top: 12px; margin-bottom: 4px; font-size: 1.05em; }
+    .category-header:first-child { margin-top: 0; }
+    .duplicate-warning { color: #d63000; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="activity.html" class="active">Activity</a>
+        <a href="graphs.html">Graphs</a>
+        <a href="history.html">History</a>
+        <a href="ai.html">AI</a>
+        <a href="pomodoro.html">Pomodoro</a>
+        <a href="ambient.html">Ambient</a>
+        <a href="profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+    </div>
+
+     <h2>Activity &amp; Habits</h2>
+
+    <div class="grid-2">
+    
+      <div>
+        <div class="card">
+          <h3>My Habits</h3>
+          <div id="habitList">Loading…</div>
+        </div>
+
+        <div class="card section">
+          <h3>Log Activity</h3>
+          <label>Habit</label>
+          <select id="logHabitSelect"><option value="">-- select --</option></select>
+          <label>Minutes Spent</label>
+          <input type="number" id="logMinutes" min="1" value="30" />
+          <label>Date</label>
+          <input type="date" id="logDate" />
+          <button class="btn btn-primary" onclick="logActivity()">Log Activity</button>
+          <p id="logMsg"></p>
+        </div>
+
+        <div class="card section">
+          <h3>Today's Logs</h3>
+          <div id="todayLogs">Loading…</div>
+        </div>
+      </div>
+
+       <div>
+        <div class="card">
+          <h3>Create New Habit</h3>
+          <label>Habit Name</label>
+          <input type="text" id="habitName" placeholder="e.g. Coding Practice" />
+          <label>Category</label>
+          <input type="text" id="habitCategory" placeholder="e.g. Coding, Fitness, Learning" />
+          <label>Target Time (minutes)</label>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn btn-sm" onclick="adjustTarget(-15)">-15m</button>
+            <span id="targetDisplay">60</span> min
+            <button class="btn btn-sm" onclick="adjustTarget(15)">+15m</button>
+          </div>
+          <input type="number" id="habitTarget" value="60" min="1" style="margin-top:8px;" />
+          <button class="btn btn-primary" onclick="createHabit()" style="margin-top:8px;">Add Habit</button>
+          <p id="habitMsg"></p>
+        </div>
+
+        <div class="card section">
+          <h3>Daily Notes</h3>
+          <label>Date</label>
+          <input type="date" id="noteDate" />
+          <textarea id="noteContent" rows="4" placeholder="e.g. Solved 3 LeetCode problems today."></textarea>
+          <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+          <p id="noteMsg"></p>
+          <div class="pixel-divider"></div>
+          <h4>Recent Notes</h4>
+          <div id="notesList">Loading…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="static/js/auth.js"></script>
+  <script>
+
+const today = new Date().toISOString().split("T")[0];
+    document.getElementById("logDate").value = today;
+    document.getElementById("noteDate").value = today;
+    loadKaizenGifs();
+
+    let targetMinutes = 60;
+    let cachedHabits = [];
+
+    function adjustTarget(delta) {
+      targetMinutes = Math.max(15, targetMinutes + delta);
+      document.getElementById("targetDisplay").textContent = targetMinutes;
+      document.getElementById("habitTarget").value = targetMinutes;
+    }
+
+    document.getElementById("habitTarget").addEventListener("input", (e) => {
+      targetMinutes = parseInt(e.target.value) || 60;
+      document.getElementById("targetDisplay").textContent = targetMinutes;
+    });
+
+    requireAuth(async (user) => {
+      await loadHabits();
+      await loadTodayLogs();
+      await loadNotes();
+    });
+
+    async function loadHabits() {
+      try {
+        const habits = await apiFetch("/api/habits");
+        cachedHabits = habits;
+        const listEl = document.getElementById("habitList");
+        const selectEl = document.getElementById("logHabitSelect");
+        selectEl.innerHTML = '<option value="">-- select --</option>';
+        if (!habits.length) { listEl.textContent = "No habits yet."; return; }
+
+        const groups = {};
+        habits.forEach(h => {
+          const cat = h.category || "Uncategorized";
+          if (!groups[cat]) groups[cat] = [];
+          groups[cat].push(h);
+        });
+
+        let html = "";
+        for (const [category, items] of Object.entries(groups)) {
+          html += `<div class="category-header">${category}</div>`;
+          html += items.map(h =>
+            `<div class="habit-item">
+              <span>• <strong>${h.name}</strong> – ${h.target_minutes} min</span>
+              <button class="btn btn-sm" onclick="deleteHabit('${h.id}')">✕</button>
+            </div>`
+          ).join("");
+        }
+        listEl.innerHTML = html;
+
+        habits.forEach(h => {
+          const opt = document.createElement("option");
+          opt.value = h.id;
+          opt.textContent = h.name;
+          selectEl.appendChild(opt);
+        });
+      } catch (e) {
+        document.getElementById("habitList").textContent = "Error loading habits.";
+      }
+    }
+
+    async function createHabit() {
+      const name = document.getElementById("habitName").value.trim();
+      const category = document.getElementById("habitCategory").value.trim();
+      const target_minutes = parseInt(document.getElementById("habitTarget").value) || 60;
+      const msgEl = document.getElementById("habitMsg");
+      msgEl.className = "";
+      if (!name) { msgEl.textContent = "Habit name required."; return; }
+
+     
+      const duplicate = cachedHabits.some(h =>
+        h.name.toLowerCase() === name.toLowerCase() &&
+        (h.category || "").toLowerCase() === category.toLowerCase()
+      );
+      if (duplicate) {
+        msgEl.textContent = "A habit with this name already exists in this category.";
+        msgEl.className = "duplicate-warning";
+        return;
+      }
+
+      try {
+        await apiFetch("/api/habits", {
+          method: "POST",
+          body: JSON.stringify({ name, category, target_minutes }),
+        });
+        msgEl.textContent = "Habit created!";
+        document.getElementById("habitName").value = "";
+        document.getElementById("habitCategory").value = "";
+        await loadHabits();
+      } catch (e) {
+        msgEl.textContent = e.message;
+      }
+    }
+
+
+     async function deleteHabit(id) {
+      if (!confirm("Delete this habit?")) return;
+      try {
+        await apiFetch(`/api/habits/${id}`, { method: "DELETE" });
+        await loadHabits();
+      } catch (e) { alert(e.message); }
+    }
+
+
+     async function loadTodayLogs() {
+      try {
+        const logs = await apiFetch(`/api/activity?log_date=${today}`);
+        const el = document.getElementById("todayLogs");
+        if (!logs.length) { el.textContent = "No activity logged today."; return; }
+        el.innerHTML = logs.map(l =>
+          `<div class="log-item">${l.habit_name}: <strong>${l.minutes_spent} min</strong>
+           <button class="btn btn-sm" onclick="deleteLog('${l.id}')">✕</button></div>`
+        ).join("");
+      } catch (_) {}
+    }
+
+    async function logActivity() {
+      const habitSelect = document.getElementById("logHabitSelect");
+      const habit_id = habitSelect.value || null;
+      const habit_name = habitSelect.options[habitSelect.selectedIndex]?.text || "";
+      const minutes_spent = parseInt(document.getElementById("logMinutes").value);
+      const log_date = document.getElementById("logDate").value;
+      if (!habit_name || habit_name === "-- select --") { document.getElementById("logMsg").textContent = "Select a habit."; return; }
+      if (!minutes_spent || minutes_spent < 1) { document.getElementById("logMsg").textContent = "Enter valid minutes."; return; }
+      try {
+        await apiFetch("/api/activity", {
+          method: "POST",
+          body: JSON.stringify({ habit_id, habit_name, minutes_spent, log_date }),
+        });
+        document.getElementById("logMsg").textContent = "Activity logged!";
+        await loadTodayLogs();
+      } catch (e) { document.getElementById("logMsg").textContent = e.message; }
+    }
+
+    async function deleteLog(id) {
+      try {
+        await apiFetch(`/api/activity/${id}`, { method: "DELETE" });
+        await loadTodayLogs();
+      } catch (e) { alert(e.message); }
+    }
+
+     async function saveNote() {
+      const content = document.getElementById("noteContent").value.trim();
+      const note_date = document.getElementById("noteDate").value;
+      if (!content) { document.getElementById("noteMsg").textContent = "Note is empty."; return; }
+      try {
+        await apiFetch("/api/notes", {
+          method: "POST",
+          body: JSON.stringify({ content, note_date }),
+        });
+        document.getElementById("noteMsg").textContent = "Note saved!";
+        document.getElementById("noteContent").value = "";
+        await loadNotes();
+      } catch (e) { document.getElementById("noteMsg").textContent = e.message; }
+    }
+
+    async function loadNotes() {
+      try {
+        const notes = await apiFetch("/api/notes");
+        const el = document.getElementById("notesList");
+        if (!notes.length) { el.textContent = "No notes yet."; return; }
+        el.innerHTML = notes.slice(0, 5).map(n =>
+          `<div class="log-item"><strong>${n.note_date}</strong>: ${n.content}</div>`
+        ).join("");
+      } catch (_) {}
+    }
+  </script
+</body>
+</html>

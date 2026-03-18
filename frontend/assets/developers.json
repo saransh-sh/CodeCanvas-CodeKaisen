@@ -1,0 +1,23 @@
+[
+  {
+    "name": "Saransh Sharma",
+    "role": "Developer",
+    "quote": "It’s not about why we’re here. It’s about what we do now that we are.",
+    "bio": "Architected the entire backend infrastructure and oversaw the end-to-end deployment. Focused on creating a scalable, high-performance engine that handles the heavy lifting of Kaizen AI.",
+    "avatar": "https://media1.tenor.com/m/yDFMgw_vDqoAAAAd/toji-fushiguro-toji.gif"
+  },
+  {
+    "name": "Yug Trivedi",
+    "role": "Developer",
+    "quote": "Good code is like a good habit — consistent, clean, and built one step at a time.",
+    "bio": "Contributed to the initial system brainstorming and frontend architecture. Provided essential support in bridging the gap between user interface and backend logic.",
+    "avatar": "https://media1.tenor.com/m/J3FiWDnw2Z4AAAAC/devil-may-cry-nero.gif"
+  },
+  {
+    "name": "Prerna Dixit",
+    "role": "Developer",
+    "quote": "I map loopholes in your alibi. kaizen does the rest.",
+    "bio": "Instrumental in crafting the layout designs and frontend aesthetics. Passionate about creating intuitive interfaces that make complex AI functions feel accessible and visually engaging.",
+    "avatar": "https://media1.tenor.com/m/TZ38ckGdx0IAAAAd/taylor-swift-tswift.gif"
+  }
+]
