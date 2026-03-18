@@ -241,6 +241,19 @@
         document.getElementById("lofiCustomAudioBtn").textContent = "⏹ Audio";
       }
     }
+        function stopCustomAudio() {
+      if (customAudioEl) {
+        customAudioEl.pause();
+        customAudioEl.currentTime = 0;
+        customAudioEl = null;
+      }
+      customAudioPlaying = false;
+      document.getElementById("customAudioBtn").textContent = "▶ Custom Audio";
+      document.getElementById("customAudioBtn").classList.remove("active");
+      if (document.getElementById("lofiCustomAudioBtn")) {
+        document.getElementById("lofiCustomAudioBtn").textContent = "▶ Audio";
+      }
+    }
 
 
 
