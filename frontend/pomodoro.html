@@ -189,6 +189,12 @@
       document.getElementById("cycleProgress").textContent =
         `Cycle ${cycleNum} — Session ${sessionInCycle} of ${settings.cycles} (${remaining} remaining)`;
     }
+    function renderDots() {
+      const el = document.getElementById("sessionDots");
+      el.innerHTML = Array.from({ length: settings.cycles }, (_, i) =>
+        `<span class="dot ${i < (sessionsComplete % settings.cycles) ? 'done' : ''}"></span>`
+      ).join("");
+    }
 
 
 
