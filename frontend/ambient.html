@@ -255,6 +255,23 @@
       }
     }
 
+        function toggleFullscreen() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      const btn = document.getElementById("fullscreenBtn");
+      if (document.fullscreenElement) {
+        btn.textContent = "⛶ Exit Fullscreen";
+      } else {
+        btn.textContent = "⛶ Fullscreen";
+      }
+    });
+
 
 
 
