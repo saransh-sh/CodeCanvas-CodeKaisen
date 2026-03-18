@@ -61,5 +61,22 @@
         
       </div>
     </div>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script>
+    const PALETTE = [
+      "#d4788c", "#b85a6e", "#e8a0b0", "#c0608c", "#9b3a5c",
+      "#e8b4c0", "#d46a7c", "#f0c8d4", "#a84060", "#cc5070",
+    ];
+    loadKaizenGifs();
+
+    function scoreToGrade(score) {
+      if (score >= 80) return "A";
+      if (score >= 60) return "B";
+      if (score >= 40) return "C";
+      return "D";
+    }
+
 </body>
 </html>
