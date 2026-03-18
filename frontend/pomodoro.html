@@ -114,7 +114,18 @@
       return { ...defaultSettings };
     }
 
-    
+        function persistSettings(settings) {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    }
+
+    let settings = loadSettings();
+    let secondsLeft   = settings.workMinutes * 60;
+    let isRunning     = false;
+    let isFocus       = true;
+    let intervalId    = null;
+    let sessionsComplete = 0;
+
+
 
     </script>
 
