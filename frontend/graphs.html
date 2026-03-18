@@ -102,7 +102,46 @@
         });
       } catch (_) {}
 
-      
+            try {
+        const weekly = await apiFetch("/api/analytics/weekly");
+        const labels = weekly.map(d => d.date.slice(5));
+        const scores = weekly.map(d => d.score);
+        const minutes = weekly.map(d => d.completed_minutes);
+
+        new Chart(document.getElementById("barChart"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{
+  label: "Productivity Score %",
+  data: scores,
+  backgroundColor: scores.map(score => {
+    if (score >= 75) return "#22c55e";   
+    if (score >= 40) return "#f59e0b";   
+    return "#ef4444";                    
+  }),
+  borderColor: scores.map(score => {
+    if (score >= 75) return "#16a34a";
+    if (score >= 40) return "#d97706";
+    return "#dc2626";
+  }),
+  borderWidth: 1,
+  borderRadius: 8,
+  borderSkipped: false,
+}],
+          },
+          options: {
+            scales: {
+              y: { min: 0, max: 100, grid: { color: "#f0f0f0" } },
+              x: { grid: { display: false } },
+            },
+            plugins: {
+              tooltip: { callbacks: { label: ctx => `Score: ${ctx.parsed.y}%` } },
+            },
+          },
+        });
+
+        
 
 </script>
 </body>
