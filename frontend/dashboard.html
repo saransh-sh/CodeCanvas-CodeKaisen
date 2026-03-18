@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="/assets/logo.gif" id="kaizenLogo" />
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html" class="active">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <span class="streak-info">Streak: <strong id="streak">–</strong> · <span id="userInfo"></span></span>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
