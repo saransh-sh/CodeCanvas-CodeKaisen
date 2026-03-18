@@ -26,5 +26,40 @@
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
+        <div class="page-header">
+      <div>
+        <h2>Analytics &amp; Graphs</h2>
+        <p class="page-subtitle">A comprehensive breakdown of system-tracked activity and performance trends.</p>
+      </div>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="card analytics-card">
+        <h3>Time distribution (7 days)</h3>
+        <div class="chart-shell">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Weekly productivity score</h3>
+        <div class="chart-shell">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Habit completion trend</h3>
+        <div class="chart-shell">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="card analytics-card">
+        <h3>Your habits (7 days)</h3>
+        <div class="chart-shell">
+          <canvas id="radarChart"></canvas>
+        </div>
+        <p id="radarEmpty">No habits yet. <a href="/activity.html">Add some habits</a> to see your radar.</p>
+        
+      </div>
+    </div>
 </body>
 </html>
