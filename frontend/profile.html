@@ -105,8 +105,28 @@
       if (target && src) target.innerHTML = `<img src="${src}" alt="avatar" />`;
     }
 
+        requireAuth(async (user) => {
+      // Basic profile info from Firebase Auth
+      document.getElementById("profileName").textContent = user.displayName || "Anonymous";
+      document.getElementById("profileEmail").textContent = user.email || "";
+      const fallbackAvatar = await resolveProfileFallback();
+      applyAvatar(user.photoURL || fallbackAvatar);
 
-    
+      try {
+        const userData = await apiFetch(`/api/users/${user.uid}`);
+        document.getElementById("statStreak").textContent = userData.streak || 0;
+        document.getElementById("statLongest").textContent = userData.longest_streak || 0;
+        if (userData.created_at) {
+          const created = userData.created_at._seconds
+            ? new Date(userData.created_at._seconds * 1000)
+            : new Date(userData.created_at);
+          document.getElementById("memberSince").textContent = `Member since ${created.toLocaleDateString()}`;
+        }
+      } catch (_) {}
+
+
+
+
     </script>
 
 
