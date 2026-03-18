@@ -63,5 +63,25 @@
       </div>
     </div>
 
+        <div class="section">
+      <h3>Profile Photo</h3>
+      <div class="card">
+        <p class="text-muted text-sm">Upload a profile photo (PNG, JPG, or GIF) that will appear across the app.</p>
+        <label>Upload Photo</label>
+        <input type="file" id="profilePhotoFile" accept="image/png, image/jpeg, image/gif" onchange="handlePhotoUpload(this)" />
+        <p class="upload-divider">— or paste a URL —</p>
+        <label>Profile Photo URL (PNG, JPG, GIF)</label>
+        <input type="url" id="profilePhotoUrl" placeholder="https://example.com/photo.png" />
+        <button class="btn btn-primary" onclick="saveProfilePhoto()">Save Profile Photo</button>
+        <p id="profilePhotoMsg" class="photo-msg"></p>
+        <div id="profilePhotoPreviewContainer" style="display:none;">
+          <p class="text-muted text-sm">Preview:</p>
+          <img id="profilePhotoPreview" class="photo-preview mascot-preview" alt="Profile photo preview" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </body>
 </html>
