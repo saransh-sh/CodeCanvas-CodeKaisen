@@ -63,6 +63,29 @@
     }
     loadMascot();
 
+        function scoreClass(score) {
+      if (score >= 70) return "score-green";
+      if (score >= 40) return "score-yellow";
+      return "score-red";
+    }
+
+    requireAuth(async (user) => {
+      try {
+        const history = await apiFetch("/api/history");
+        const listEl = document.getElementById("historyList");
+        if (!history.length) { listEl.textContent = "No history yet. Log some activities first!"; return; }
+        listEl.innerHTML = history.map(h =>
+          `<div class="day-row" onclick="loadDay('${h.date}')">
+            <span><strong>${h.date}</strong></span>
+            <span>${h.completed_minutes} / ${h.target_minutes} min</span>
+            <span class="${scoreClass(h.score)}"><strong>${h.score.toFixed(1)}%</strong></span>
+          </div>`
+        ).join("");
+      } catch (e) {
+        document.getElementById("historyList").textContent = "Error loading history.";
+      }
+    });
+
   </script>
 
 </body>
