@@ -196,6 +196,39 @@
       ).join("");
     }
 
+        function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("pauseBtn").disabled = false;
+      intervalId = setInterval(() => {
+        secondsLeft--;
+        updateDisplay();
+        if (secondsLeft <= 0) {
+          clearInterval(intervalId);
+          isRunning = false;
+          if (isFocus) {
+            sessionsComplete++;
+            document.getElementById("sessionInfo").textContent =
+              `Session ${sessionsComplete} complete! Time for a break.`;
+            const isLong = sessionsComplete % settings.cycles === 0;
+            secondsLeft = isLong ? settings.longBreakMinutes * 60 : settings.breakMinutes * 60;
+            isFocus = false;
+            playBeep();
+          } else {
+            secondsLeft = settings.workMinutes * 60;
+            isFocus = true;
+            document.getElementById("sessionInfo").textContent = "Break over! Ready to focus?";
+            playBeep();
+          }
+          document.getElementById("startBtn").disabled = false;
+          document.getElementById("pauseBtn").disabled = true;
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+
 
 
 
