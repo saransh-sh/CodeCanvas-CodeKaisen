@@ -33,6 +33,20 @@
   object-fit: contain;
 }
 
+@media (max-width: 768px) {
+  .dashboard-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+.dashboard-mascot img {
+  transition: transform 0.3s ease;
+}
+
+.dashboard-mascot img:hover {
+  transform: scale(1.1) rotate(-2deg);
+}
+
 </style>
 </head>
 <body>
