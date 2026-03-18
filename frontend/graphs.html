@@ -141,7 +141,42 @@
           },
         });
 
-        
+                const lineCtx = document.getElementById("lineChart").getContext("2d");
+         const gradient = lineCtx.createLinearGradient(0, 0, 0, 300);
+         gradient.addColorStop(0, "rgba(212, 120, 140, 0.4)");
+         gradient.addColorStop(1, "rgba(212, 120, 140, 0.05)");
+
+        new Chart(lineCtx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Minutes Completed",
+              data: minutes,
+               borderColor: "#d4788c",
+               backgroundColor: gradient,
+               fill: true,
+               tension: 0.3,
+               pointBackgroundColor: "#b85a6e",
+               pointBorderColor: "#fff",
+              pointBorderWidth: 2,
+              pointRadius: 5,
+              pointHoverRadius: 7,
+            }],
+          },
+          options: {
+            scales: {
+              y: { beginAtZero: true, grid: { color: "#f0f0f0" } },
+              x: { grid: { display: false } },
+            },
+            plugins: {
+              tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} min` } },
+            },
+          },
+        });
+      } catch (_) {}
+
+
 
 </script>
 </body>
