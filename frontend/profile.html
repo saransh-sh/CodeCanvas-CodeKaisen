@@ -83,5 +83,33 @@
   </div>
 
 
+      <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="static/js/auth.js"></script>
+    <script>
+    const PROFILE_FALLBACK = "https://media.tenor.com/aJ8Y6x7QDSkAAAAM/pixel-portrait.gif";
+    loadKaizenGifs();
+
+    async function resolveProfileFallback() {
+      try {
+        const res = await fetch("/assets/mascots.json");
+        const data = await res.json();
+        return (data && data.profile && data.profile.trim()) || (data && data.fallback) || PROFILE_FALLBACK;
+      } catch (_) {
+        return PROFILE_FALLBACK;
+      }
+    }
+
+    function applyAvatar(src) {
+      const target = document.getElementById("avatar");
+      if (target && src) target.innerHTML = `<img src="${src}" alt="avatar" />`;
+    }
+
+
+    
+    </script>
+
+
+
 </body>
 </html>
