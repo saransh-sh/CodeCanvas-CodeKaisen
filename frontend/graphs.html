@@ -6,6 +6,38 @@
   <title>Graphs – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .grade { font-size: 1.8em; font-weight: bold; }
+    .grade-A { color: #27ae60; }
+    .grade-B { color: #2980b9; }
+    .grade-C { color: #f39c12; }
+    .grade-D { color: #e74c3c; }
+    #radarEmpty { color: var(--text-muted); font-style: italic; display: none; }
+    .grades-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+    .grade-item { text-align: center; padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-card); border: 1px solid var(--border-light); }
+    .grade-label { font-size: 0.8em; color: var(--text-muted); }
+    .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 12px 0 8px; }
+    .page-header h2 { margin: 0; }
+    .page-subtitle { margin: 0; color: var(--text-secondary); }
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 14px;
+      margin: 8px 0 20px;
+    }
+    .analytics-card {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .analytics-card h3 { margin: 0; }
+    .chart-shell {
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      background: var(--bg-secondary);
+    }
+  </style>
   </head>
 <body>
   <div class="container">
