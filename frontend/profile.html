@@ -124,6 +124,39 @@
         }
       } catch (_) {}
 
+            try {
+        const streakData = await apiFetch(`/api/users/${user.uid}/streak`, { method: "PUT" });
+        document.getElementById("statStreak").textContent = streakData.streak || 0;
+        document.getElementById("statLongest").textContent = streakData.longest_streak || 0;
+      } catch (_) {}
+
+      try {
+        const habits = await apiFetch("/api/habits");
+        document.getElementById("statHabits").textContent = habits.length;
+      } catch (_) {}
+
+ 
+      try {
+        const logs = await apiFetch("/api/activity");
+        document.getElementById("statLogs").textContent = logs.length;
+        const totalMinutes = logs.reduce((sum, l) => sum + (l.minutes_spent || 0), 0);
+        document.getElementById("statMinutes").textContent = totalMinutes;
+      } catch (_) {}
+
+
+      try {
+        const history = await apiFetch("/api/history");
+        if (history.length) {
+          const avgScore = history.reduce((sum, h) => sum + (h.score || 0), 0) / history.length;
+          document.getElementById("statAvgScore").textContent = avgScore.toFixed(1);
+        } else {
+          document.getElementById("statAvgScore").textContent = "–";
+        }
+      } catch (_) {}
+
+      
+
+
 
 
 
