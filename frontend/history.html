@@ -86,6 +86,23 @@
       }
     });
 
+        async function loadDay(dateStr) {
+      try {
+        const data = await apiFetch(`/api/history/${dateStr}`);
+        document.getElementById("detailPanel").classList.remove("hidden");
+        document.getElementById("detailDate").textContent = dateStr;
+        document.getElementById("detailScore").textContent = `${data.score.toFixed(1)}%`;
+        document.getElementById("completedList").innerHTML =
+          (data.completed_tasks.length ? data.completed_tasks : ["None"]).map(t => `<li>${t}</li>`).join("");
+        document.getElementById("pendingList").innerHTML =
+          (data.pending_tasks.length ? data.pending_tasks : ["None"]).map(t => `<li>${t}</li>`).join("");
+        document.getElementById("detailNote").textContent = data.note || "No note for this day.";
+        document.getElementById("detailPanel").scrollIntoView({ behavior: "smooth" });
+      } catch (e) {
+        alert("Could not load details: " + e.message);
+      }
+    }
+
   </script>
 
 </body>
