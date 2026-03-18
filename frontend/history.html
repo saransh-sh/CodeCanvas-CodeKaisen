@@ -54,5 +54,16 @@
     </div>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="static/js/auth.js"></script>
+  <script>
+    async function loadMascot() {
+      await loadKaizenGifs("historyMascot", "history");
+    }
+    loadMascot();
+
+  </script>
+
 </body>
 </html>
