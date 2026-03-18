@@ -216,6 +216,31 @@
         alert("No custom audio URL saved. Enter a URL above and click Save.");
         return;
       }
+       if (noiseOn) {
+        if (noiseNode) { noiseNode.stop(); noiseNode = null; }
+        if (audioCtx) { audioCtx.close(); audioCtx = null; }
+        noiseOn = false;
+        document.getElementById("noiseBtn").textContent = "▶ White Noise";
+        document.getElementById("noiseBtn").classList.remove("active");
+        document.getElementById("lofiNoiseBtn").textContent = "▶ White Noise";
+      }
+
+      if (customAudioPlaying) {
+        stopCustomAudio();
+        return;
+      }
+
+      customAudioEl = new Audio(audioUrl);
+      customAudioEl.loop = true;
+      customAudioEl.volume = parseFloat(document.getElementById("noiseVolume").value || document.getElementById("lofiVolume").value);
+      customAudioEl.play().catch(e => alert("Could not play audio: " + e.message));
+      customAudioPlaying = true;
+      document.getElementById("customAudioBtn").textContent = "⏹ Custom Audio";
+      document.getElementById("customAudioBtn").classList.add("active");
+      if (document.getElementById("lofiCustomAudioBtn")) {
+        document.getElementById("lofiCustomAudioBtn").textContent = "⏹ Audio";
+      }
+    }
 
 
 
