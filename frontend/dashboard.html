@@ -45,4 +45,24 @@
       <button class="quick-btn" onclick="location.href='/ambient.html'">Ambient Mode</button>
       <button class="quick-btn" onclick="location.href='/profile.html'">Profile</button>
     </div>
-    
+     <div class="section">
+      <h3>Today's Progress</h3>
+      <div id="progressDots">Loading…</div>
+    </div>
+
+    <div class="section grid-2">
+      <div class="card">
+        <h3>Time Distribution (This Week)</h3>
+        <canvas id="pieChart" width="250" height="250"></canvas>
+      </div>
+      <div class="card">
+        <h3>Motivation</h3>
+        <blockquote id="quote">Small daily improvements lead to massive results.</blockquote>
+        <p><em>– Kaizen Philosophy</em></p>
+        <div class="pixel-divider"></div>
+        <h4>Weekly Productivity</h4>
+        <canvas id="barChart" width="250" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
