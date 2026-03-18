@@ -163,7 +163,33 @@
       document.getElementById('sessionInfo').textContent = 'Settings saved! Ready to focus.';
       document.getElementById('settingsPanel').classList.remove('open');
     }
-    
+
+        function formatTime(s) {
+      const m = Math.floor(s / 60).toString().padStart(2, "0");
+      const sec = (s % 60).toString().padStart(2, "0");
+      return `${m}:${sec}`;
+    }
+
+    function updateDisplay() {
+      document.getElementById("timerDisplay").textContent = formatTime(secondsLeft);
+      if (isFocus) {
+        document.getElementById("sessionLabel").textContent = "Focus Session";
+      } else {
+        const isLong = sessionsComplete % settings.cycles === 0 && sessionsComplete > 0;
+        document.getElementById("sessionLabel").textContent = isLong ? "Long Break" : "Short Break";
+      }
+      updateCycleProgress();
+      renderDots();
+    }
+
+    function updateCycleProgress() {
+      const cycleNum = Math.floor(sessionsComplete / settings.cycles) + 1;
+      const sessionInCycle = (sessionsComplete % settings.cycles) + (isFocus ? 1 : 0);
+      const remaining = settings.cycles - (sessionsComplete % settings.cycles);
+      document.getElementById("cycleProgress").textContent =
+        `Cycle ${cycleNum} — Session ${sessionInCycle} of ${settings.cycles} (${remaining} remaining)`;
+    }
+
 
 
 
