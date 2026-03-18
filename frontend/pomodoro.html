@@ -140,6 +140,32 @@
       document.getElementById('settingsPanel').classList.toggle('open');
     }
 
+        function saveSettings() {
+      const work = parseInt(document.getElementById('settingWork').value, 10);
+      const brk = parseInt(document.getElementById('settingBreak').value, 10);
+      const longBrk = parseInt(document.getElementById('settingLongBreak').value, 10);
+      const cyc = parseInt(document.getElementById('settingCycles').value, 10);
+
+      if (!work || work < 1 || !brk || brk < 1 || !longBrk || longBrk < 1 || !cyc || cyc < 1) {
+        alert('Please enter valid positive numbers for all settings.');
+        return;
+      }
+
+      settings = { workMinutes: work, breakMinutes: brk, longBreakMinutes: longBrk, cycles: cyc };
+      persistSettings(settings);
+      applySettingsToUI();
+
+      pauseTimer();
+      sessionsComplete = 0;
+      isFocus = true;
+      secondsLeft = settings.workMinutes * 60;
+      updateDisplay();
+      document.getElementById('sessionInfo').textContent = 'Settings saved! Ready to focus.';
+      document.getElementById('settingsPanel').classList.remove('open');
+    }
+    
+
+
 
 
 
