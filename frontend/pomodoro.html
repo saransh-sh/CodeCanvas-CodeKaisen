@@ -25,6 +25,29 @@
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
-    
+        <div class="pomo-header-row">
+      <h2>⏱ Pomodoro Focus Mode</h2>
+      <button class="btn" onclick="toggleSettings()">⚙ Settings</button>
+    </div>
+    <div id="settingsPanel" class="settings-panel section">
+      <div class="card">
+        <h3>Timer Settings</h3>
+        <label for="settingWork">Work Duration (minutes)</label>
+        <input type="number" id="settingWork" min="1" max="120" value="25" />
+
+        <label for="settingBreak">Break Duration (minutes)</label>
+        <input type="number" id="settingBreak" min="1" max="60" value="5" />
+
+        <label for="settingLongBreak">Long Break Duration (minutes)</label>
+        <input type="number" id="settingLongBreak" min="1" max="60" value="15" />
+
+        <label for="settingCycles">Number of Cycles</label>
+        <input type="number" id="settingCycles" min="1" max="20" value="4" />
+
+        <div class="settings-actions">
+          <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+    </div>
     </body>
     </html>
