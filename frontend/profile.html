@@ -177,6 +177,25 @@
       reader.readAsDataURL(file);
     }
 
+        function saveProfilePhoto() {
+      const url = document.getElementById("profilePhotoUrl").value.trim();
+      if (url) {
+        localStorage.setItem("kaizen_mascot_url", url);
+        document.getElementById("profilePhotoMsg").textContent = "Profile photo saved! It will appear across the app.";
+        showPhotoPreview(url);
+        applyAvatar(url);
+      } else {
+        localStorage.removeItem("kaizen_mascot_url");
+        document.getElementById("profilePhotoMsg").textContent = "Profile photo removed.";
+        document.getElementById("profilePhotoPreviewContainer").style.display = "none";
+      }
+    }
+
+    function showPhotoPreview(url) {
+      document.getElementById("profilePhotoPreview").src = url;
+      document.getElementById("profilePhotoPreviewContainer").style.display = "block";
+    }
+
 
 
 
