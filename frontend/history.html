@@ -5,6 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>History – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />
+
+    <style>
+    .day-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-light);
+      padding: 10px 4px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .day-row:hover { background: var(--bg-hover); }
+    .detail-panel {
+      border: 2px solid var(--border-color);
+      padding: 16px;
+      margin-top: 12px;
+      border-radius: var(--radius-md);
+      background: var(--bg-card);
+      box-shadow: var(--shadow-sm);
+    }
+
+    </style>
   </head>
 <body>
   <div class="container">
@@ -25,14 +47,12 @@
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
-        <div class="history-page-header section history-hero">
+    <div class="history-page-header section history-hero">
 
-  <!-- LEFT GIF -->
   <div class="history-mascot">
     <img id="historyMascot" />
   </div>
 
-  <!-- RIGHT TEXT -->
   <div>
     <h2>History</h2>
     <p>Select a date to open the matching detail card.</p>
