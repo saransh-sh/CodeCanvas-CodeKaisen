@@ -125,6 +125,22 @@
     let intervalId    = null;
     let sessionsComplete = 0;
 
+        function applySettingsToUI() {
+      document.getElementById('settingWork').value = settings.workMinutes;
+      document.getElementById('settingBreak').value = settings.breakMinutes;
+      document.getElementById('settingLongBreak').value = settings.longBreakMinutes;
+      document.getElementById('settingCycles').value = settings.cycles;
+      document.getElementById('cycleDescription').textContent =
+        `${settings.workMinutes} min focus → ${settings.breakMinutes} min break → Repeat`;
+      document.getElementById('longBreakDescription').textContent =
+        `After ${settings.cycles} sessions: ${settings.longBreakMinutes} min long break`;
+    }
+
+    function toggleSettings() {
+      document.getElementById('settingsPanel').classList.toggle('open');
+    }
+
+
 
 
     </script>
