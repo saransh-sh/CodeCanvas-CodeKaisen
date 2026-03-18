@@ -97,10 +97,14 @@
   </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="/static/js/auth.js"></script>
-  <script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script>
     requireAuth(() => {});
+    const savedAudioUrl = localStorage.getItem("kaizen_ambient_audio");
+    const savedVideoUrl = localStorage.getItem("kaizen_ambient_video");
+    if (savedAudioUrl) document.getElementById("customAudioUrl").value = savedAudioUrl;
+    if (savedVideoUrl) document.getElementById("customVideoUrl").value = savedVideoUrl;
 
 
 
