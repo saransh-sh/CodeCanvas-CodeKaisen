@@ -132,6 +132,61 @@
         document.getElementById("minimalMode").classList.remove("hidden");
       }
     }
+        let audioCtx = null;
+    let noiseNode = null;
+    let gainNode  = null;
+    let noiseOn   = false;
+
+    function createWhiteNoise(volume) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const bufferSize = 2 * audioCtx.sampleRate;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      noiseNode = audioCtx.createBufferSource();
+      noiseNode.buffer = buffer;
+      noiseNode.loop = true;
+
+      gainNode = audioCtx.createGain();
+      gainNode.gain.value = volume;
+
+      noiseNode.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      noiseNode.start();
+    }
+
+    function toggleNoise() {
+  
+      stopCustomAudio();
+
+      if (noiseOn) {
+        if (noiseNode) { noiseNode.stop(); noiseNode = null; }
+        if (audioCtx) { audioCtx.close(); audioCtx = null; }
+        noiseOn = false;
+        document.getElementById("noiseBtn").textContent = "▶ White Noise";
+        document.getElementById("noiseBtn").classList.remove("active");
+        document.getElementById("lofiNoiseBtn").textContent = "▶ White Noise";
+      } else {
+        const vol = parseFloat(document.getElementById("noiseVolume").value);
+        createWhiteNoise(vol);
+        noiseOn = true;
+        document.getElementById("noiseBtn").textContent = "⏹ White Noise";
+        document.getElementById("noiseBtn").classList.add("active");
+        document.getElementById("lofiNoiseBtn").textContent = "⏹ White Noise";
+      }
+    }
+
+    function setNoiseVolume(val) {
+      if (gainNode) gainNode.gain.value = parseFloat(val);
+      if (customAudioEl) customAudioEl.volume = parseFloat(val);
+
+      document.getElementById("noiseVolume").value = val;
+      document.getElementById("lofiVolume").value  = val;
+    }
+    
+
 
 
 
