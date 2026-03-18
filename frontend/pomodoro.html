@@ -76,7 +76,28 @@
       background: var(--accent);
       border-color: var(--accent-dark);
     }
-    
+
+        #sessionInfo {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: var(--text-muted);
+    }
+    #sessionDots { margin: 8px 0; }
+    .settings-panel {
+      display: none;
+      margin-top: 8px;
+    }
+    .settings-panel.open { display: block; }
+    .settings-panel .settings-actions {
+      margin-top: 12px;
+    }
+    .settings-panel label {
+      display: block;
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      margin: 10px 0 4px;
+    }
+    .settings-panel label:first-child { margin-top: 0; }
   </style>
   </head>
 <body>
