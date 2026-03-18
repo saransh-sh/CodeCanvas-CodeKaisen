@@ -6,7 +6,35 @@
   <title>Dashboard – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
+   <style>
+    blockquote {
+      margin: 8px 0;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent-light);
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+    .dashboard-hero {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.dashboard-mascot {
+  flex: 0 0 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dashboard-mascot img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+}
+
+</style>
+</head>
 <body>
   <div class="container">
     <header class="kaizen-header">
@@ -170,4 +198,6 @@
       } catch (_) {}
     });
   </script>
+</body>
+</html>
 
