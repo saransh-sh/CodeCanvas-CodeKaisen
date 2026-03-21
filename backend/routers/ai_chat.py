@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import date
 import logging
 import httpx
@@ -17,7 +17,7 @@ OPENROUTER_MODEL = "arcee-ai/trinity-large-preview:free"
 
 
 class ChatIn(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=2000)
 
 
 def _build_prompt(habit_names: list, target_mins: int, done_mins: int, message: str) -> str:
@@ -57,7 +57,7 @@ def _try_openrouter(prompt: str) -> str:
 
 
 @router.get("/ai/providers")
-def ai_providers():
+def ai_providers(uid: str = Depends(get_uid)):
     logger.info("AI providers check - OpenRouter: %s", bool(config.OPENROUTER_API_KEY))
     return {
         "openrouter": bool(config.OPENROUTER_API_KEY),
@@ -93,4 +93,5 @@ def chat_with_ai(data: ChatIn, uid: str = Depends(get_uid), db=Depends(get_db)):
         text = _try_openrouter(prompt)
         return {"response": text, "provider": "openrouter"}
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"OpenRouter API error: {str(e)}")
+        logger.error("OpenRouter API error for user %s: %s", uid, str(e))
+        raise HTTPException(status_code=502, detail="AI service temporarily unavailable")
