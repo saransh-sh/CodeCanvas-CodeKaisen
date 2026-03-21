@@ -7,43 +7,57 @@
   <link rel="stylesheet" href="static/css/style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    .grade { font-size: 1.8em; font-weight: bold; }
-    .grade-A { color: #27ae60; }
-    .grade-B { color: #2980b9; }
-    .grade-C { color: #f39c12; }
-    .grade-D { color: #e74c3c; }
-    #radarEmpty { color: var(--text-muted); font-style: italic; display: none; }
-    .grades-container { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-    .grade-item { text-align: center; padding: 8px 12px; border-radius: var(--radius-md); background: var(--bg-card); border: 1px solid var(--border-light); }
-    .grade-label { font-size: 0.8em; color: var(--text-muted); }
     .page-header { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; margin: 12px 0 8px; }
     .page-header h2 { margin: 0; }
     .page-subtitle { margin: 0; color: var(--text-secondary); }
     .analytics-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 14px;
-      margin: 8px 0 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 16px 0 20px;
     }
     .analytics-card {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      height: 100%;
     }
-    .analytics-card h3 { margin: 0; }
+    .analytics-card h3 {
+      margin: 0;
+      font-size: 0.95em;
+      color: var(--accent-dark);
+    }
     .chart-shell {
       border: 2px solid var(--border-color);
       border-radius: var(--radius-md);
-      padding: 10px;
+      padding: 12px;
       background: var(--bg-secondary);
+      position: relative;
+      height: 280px;
+      max-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .chart-shell canvas {
+      max-height: 260px !important;
+      max-width: 100% !important;
+    }
+    #radarEmpty {
+      color: var(--text-muted);
+      font-style: italic;
+      display: none;
+      text-align: center;
+      padding: 20px;
     }
   </style>
-  </head>
+</head>
 <body>
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -54,48 +68,72 @@
         <a href="/ai.html">AI</a>
         <a href="/pomodoro.html">Pomodoro</a>
         <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
-        <div class="page-header">
+
+    <div class="page-header">
       <div>
         <h2>Analytics &amp; Graphs</h2>
         <p class="page-subtitle">A comprehensive breakdown of system-tracked activity and performance trends.</p>
       </div>
+     
+      <div id="kz-export-btn-wrap"></div>
     </div>
 
     <div class="analytics-grid">
       <div class="card analytics-card">
         <h3>Time distribution (7 days)</h3>
+        <p style="margin:0 0 6px;font-size:0.8em;color:var(--text-secondary);">Minutes logged per habit over the last 7 days.</p>
         <div class="chart-shell">
           <canvas id="pieChart"></canvas>
         </div>
       </div>
       <div class="card analytics-card">
         <h3>Weekly productivity score</h3>
+        <p style="margin:0 0 6px;font-size:0.8em;color:var(--text-secondary);">Score = minutes completed ÷ total target minutes × 100. Green ≥ 75%, yellow ≥ 40%, red &lt; 40%.</p>
         <div class="chart-shell">
           <canvas id="barChart"></canvas>
         </div>
       </div>
       <div class="card analytics-card">
         <h3>Habit completion trend</h3>
+        <p style="margin:0 0 6px;font-size:0.8em;color:var(--text-secondary);">Total minutes logged each day over the last 7 days.</p>
         <div class="chart-shell">
           <canvas id="lineChart"></canvas>
         </div>
       </div>
       <div class="card analytics-card">
         <h3>Your habits (7 days)</h3>
+        <p style="margin:0 0 6px;font-size:0.8em;color:var(--text-secondary);">Each axis shows completion % for that habit vs. 7-day target.</p>
         <div class="chart-shell">
           <canvas id="radarChart"></canvas>
         </div>
         <p id="radarEmpty">No habits yet. <a href="/activity.html">Add some habits</a> to see your radar.</p>
-        
       </div>
     </div>
-        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+
+
+    <div id="kz-quick-insights" style="display:none;margin:0 0 16px;padding:12px 16px;border:2px solid var(--border-color);border-radius:var(--radius-md);background:var(--bg-card);">
+      <h4 style="margin:0 0 8px;color:var(--accent-dark);font-size:0.95em;">📊 Quick Insights</h4>
+      <div id="kz-quick-insights-content" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+
+    <div id="kz-advanced-analytics"></div>
+
+  </div>
+=
+    <link rel="stylesheet" href="static/css/theme.css" />
+    <link rel="stylesheet" href="static/css/components.css" />
+   
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="static/js/firebase-init.js"></script>
     <script src="static/js/auth.js"></script>
+    <script src="static/js/theme.js"></script>
+    <script src="static/js/gamification.js"></script>
     <script>
     const PALETTE = [
       "#d4788c", "#b85a6e", "#e8a0b0", "#c0608c", "#9b3a5c",
@@ -111,6 +149,7 @@
     }
 
     requireAuth(async (user) => {
+
       try {
         const dist = await apiFetch("/api/analytics/distribution");
         new Chart(document.getElementById("pieChart"), {
@@ -126,15 +165,18 @@
             }],
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.2,
             plugins: {
-              legend: { position: "bottom", labels: { padding: 12, usePointStyle: true, font: { size: 12 } } },
+              legend: { position: "bottom", labels: { padding: 8, usePointStyle: true, font: { size: 11 } } },
               tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed} min` } },
             },
           },
         });
       } catch (_) {}
 
-            try {
+      try {
         const weekly = await apiFetch("/api/analytics/weekly");
         const labels = weekly.map(d => d.date.slice(5));
         const scores = weekly.map(d => d.score);
@@ -148,9 +190,9 @@
   label: "Productivity Score %",
   data: scores,
   backgroundColor: scores.map(score => {
-    if (score >= 75) return "#22c55e";   
-    if (score >= 40) return "#f59e0b";   
-    return "#ef4444";                    
+    if (score >= 75) return "#22c55e";
+    if (score >= 40) return "#f59e0b";
+    return "#ef4444";
   }),
   borderColor: scores.map(score => {
     if (score >= 75) return "#16a34a";
@@ -158,22 +200,27 @@
     return "#dc2626";
   }),
   borderWidth: 1,
-  borderRadius: 8,
+  borderRadius: 6,
   borderSkipped: false,
 }],
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             scales: {
-              y: { min: 0, max: 100, grid: { color: "#f0f0f0" } },
-              x: { grid: { display: false } },
+              y: { min: 0, max: 100, grid: { color: "#f0f0f0" }, ticks: { font: { size: 10 } } },
+              x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, autoSkipPadding: 10 } },
             },
             plugins: {
+              legend: { display: false },
               tooltip: { callbacks: { label: ctx => `Score: ${ctx.parsed.y}%` } },
             },
           },
         });
 
-                const lineCtx = document.getElementById("lineChart").getContext("2d");
+     
+        const lineCtx = document.getElementById("lineChart").getContext("2d");
          const gradient = lineCtx.createLinearGradient(0, 0, 0, 300);
          gradient.addColorStop(0, "rgba(212, 120, 140, 0.4)");
          gradient.addColorStop(1, "rgba(212, 120, 140, 0.05)");
@@ -192,23 +239,28 @@
                pointBackgroundColor: "#b85a6e",
                pointBorderColor: "#fff",
               pointBorderWidth: 2,
-              pointRadius: 5,
-              pointHoverRadius: 7,
+              pointRadius: 4,
+              pointHoverRadius: 6,
             }],
           },
           options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 1.5,
             scales: {
-              y: { beginAtZero: true, grid: { color: "#f0f0f0" } },
-              x: { grid: { display: false } },
+              y: { beginAtZero: true, grid: { color: "#f0f0f0" }, ticks: { font: { size: 10 } } },
+              x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 0, autoSkip: true, autoSkipPadding: 10 } },
             },
             plugins: {
+              legend: { display: false },
               tooltip: { callbacks: { label: ctx => `${ctx.parsed.y} min` } },
             },
           },
         });
       } catch (_) {}
 
-            try {
+   
+      try {
         const radar = await apiFetch("/api/analytics/radar");
         if (!radar.labels || !radar.labels.length) {
           document.getElementById("radarChart").style.display = "none";
@@ -226,28 +278,62 @@
                  pointBackgroundColor: "#b85a6e",
                 pointBorderColor: "#fff",
                 pointBorderWidth: 2,
-                pointRadius: 5,
+                pointRadius: 4,
                 borderWidth: 2,
               }],
             },
             options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              aspectRatio: 1.2,
               scales: {
                 r: {
                   min: 0, max: 100,
-                  ticks: { stepSize: 20, backdropColor: "transparent", font: { size: 10 } },
+                  ticks: { stepSize: 20, backdropColor: "transparent", font: { size: 9 } },
                   grid: { color: "rgba(232, 200, 212, 0.6)" },
                   angleLines: { color: "rgba(212, 120, 140, 0.4)" },
-                  pointLabels: { font: { size: 12, weight: "bold" }, color: "#2c2433" },
+                  pointLabels: { font: { size: 11, weight: "bold" }, color: "#2c2433" },
                 },
               },
               plugins: { legend: { display: false } },
             },
           });
-document.getElementById("grades").innerHTML = "";
+          const gradesEl = document.getElementById("grades");
+          if (gradesEl) gradesEl.innerHTML = "";
+        }
+      } catch (_) {}
+
+      try {
+        const adv = await apiFetch("/api/analytics/advanced");
+        const insightsEl = document.getElementById("kz-quick-insights-content");
+        const chips = [];
+
+        if (adv.best_day && adv.best_day !== "N/A")
+          chips.push(`📅 <strong>Best performing day:</strong> ${adv.best_day} (${adv.best_day_pct}% avg)`);
+
+        if (adv.habit_streaks && adv.habit_streaks.length) {
+          const sorted = [...adv.habit_streaks].sort((a, b) => a.streak - b.streak);
+          if (sorted[0].streak === 0 || sorted[0].streak < sorted[sorted.length - 1].streak)
+            chips.push(`⚠️ <strong>Most skipped habit:</strong> ${sorted[0].name}`);
+        }
+
+        if (adv.completion_rate !== undefined)
+          chips.push(`📈 <strong>30-day completion rate:</strong> ${adv.completion_rate}%`);
+
+        if (adv.longest_streak > 0)
+          chips.push(`🔥 <strong>Longest streak:</strong> ${adv.longest_streak} days`);
+
+        if (chips.length) {
+          insightsEl.innerHTML = chips.map(c =>
+            `<span style="display:inline-block;background:var(--bg-hover);border:1px solid var(--border-color);border-radius:20px;padding:4px 12px;font-size:0.82em;">${c}</span>`
+          ).join("");
+          document.getElementById("kz-quick-insights").style.display = "block";
         }
       } catch (_) {}
     });
-</script>
-</div>
+  </script>
+  <script src="/static/js/analytics.js"></script>
+  <link rel="stylesheet" href="/static/css/report.css" />
+  <script src="/static/js/report.js"></script>
 </body>
 </html>
