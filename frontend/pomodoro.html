@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pomodoro – Kaizen AI</title>
-  <link rel="stylesheet" href="static/css/style.css" />
-
-   <style>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
     .pomo-header-row {
       display: flex;
       align-items: center;
@@ -22,8 +21,7 @@
       grid-template-columns: 1fr 1fr;
       gap: 16px;
     }
-
-        @media (max-width: 768px) {
+    @media (max-width: 768px) {
       .pomo-grid { grid-template-columns: 1fr; }
     }
 
@@ -76,8 +74,7 @@
       background: var(--accent);
       border-color: var(--accent-dark);
     }
-
-        #sessionInfo {
+    #sessionInfo {
       margin-top: 10px;
       font-size: 0.9em;
       color: var(--text-muted);
@@ -99,12 +96,12 @@
     }
     .settings-panel label:first-child { margin-top: 0; }
   </style>
-  </head>
+</head>
 <body>
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -115,14 +112,18 @@
         <a href="/ai.html">AI</a>
         <a href="/pomodoro.html" class="active">Pomodoro</a>
         <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
-        <div class="pomo-header-row">
+
+    <div class="pomo-header-row">
       <h2>⏱ Pomodoro Focus Mode</h2>
       <button class="btn" onclick="toggleSettings()">⚙ Settings</button>
     </div>
+
+    <!-- Settings Card (collapsed by default) -->
     <div id="settingsPanel" class="settings-panel section">
       <div class="card">
         <h3>Timer Settings</h3>
@@ -143,8 +144,10 @@
         </div>
       </div>
     </div>
-        <div class="pomo-grid section">
 
+    <!-- Timer + Controls Row -->
+    <div class="pomo-grid section">
+      <!-- Timer Card -->
       <div class="card timer-card">
         <h3>Current Session</h3>
         <div id="sessionLabel">Focus Session</div>
@@ -152,6 +155,7 @@
         <div id="cycleProgress"></div>
       </div>
 
+      <!-- Controls Card -->
       <div class="card controls-card">
         <h3>Controls</h3>
         <button class="btn btn-primary" onclick="startTimer()" id="startBtn">▶ Start</button>
@@ -159,15 +163,17 @@
         <button class="btn" onclick="resetTimer()">⟳ Reset</button>
       </div>
     </div>
-    <div class="pomo-grid">
 
+    <!-- Session Tracker + Cycle Info Row -->
+    <div class="pomo-grid">
+      <!-- Session Tracker Card -->
       <div class="card">
         <h3>Session Tracker</h3>
         <div id="sessionDots"></div>
         <div id="sessionInfo">Complete a focus session to earn a reward</div>
       </div>
 
-
+      <!-- Cycle Info Card -->
       <div class="card">
         <h3>Cycle Info</h3>
         <p id="cycleDescription">25 min focus → 5 min break → Repeat</p>
@@ -176,9 +182,15 @@
     </div>
   </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <!-- Kaizen AI Enhancements -->
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/firebase-init.js"></script>
   <script src="/static/js/auth.js"></script>
+  <script src="/static/js/theme.js"></script>
   <script>
     requireAuth(() => {});
     loadKaizenGifs();
@@ -208,7 +220,7 @@
       return { ...defaultSettings };
     }
 
-        function persistSettings(settings) {
+    function persistSettings(settings) {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
     }
 
@@ -219,7 +231,7 @@
     let intervalId    = null;
     let sessionsComplete = 0;
 
-        function applySettingsToUI() {
+    function applySettingsToUI() {
       document.getElementById('settingWork').value = settings.workMinutes;
       document.getElementById('settingBreak').value = settings.breakMinutes;
       document.getElementById('settingLongBreak').value = settings.longBreakMinutes;
@@ -234,7 +246,7 @@
       document.getElementById('settingsPanel').classList.toggle('open');
     }
 
-        function saveSettings() {
+    function saveSettings() {
       const work = parseInt(document.getElementById('settingWork').value, 10);
       const brk = parseInt(document.getElementById('settingBreak').value, 10);
       const longBrk = parseInt(document.getElementById('settingLongBreak').value, 10);
@@ -249,6 +261,7 @@
       persistSettings(settings);
       applySettingsToUI();
 
+      // Reset timer to new work duration
       pauseTimer();
       sessionsComplete = 0;
       isFocus = true;
@@ -258,7 +271,7 @@
       document.getElementById('settingsPanel').classList.remove('open');
     }
 
-        function formatTime(s) {
+    function formatTime(s) {
       const m = Math.floor(s / 60).toString().padStart(2, "0");
       const sec = (s % 60).toString().padStart(2, "0");
       return `${m}:${sec}`;
@@ -283,6 +296,7 @@
       document.getElementById("cycleProgress").textContent =
         `Cycle ${cycleNum} — Session ${sessionInCycle} of ${settings.cycles} (${remaining} remaining)`;
     }
+
     function renderDots() {
       const el = document.getElementById("sessionDots");
       el.innerHTML = Array.from({ length: settings.cycles }, (_, i) =>
@@ -290,7 +304,7 @@
       ).join("");
     }
 
-        function startTimer() {
+    function startTimer() {
       if (isRunning) return;
       isRunning = true;
       document.getElementById("startBtn").disabled = true;
@@ -322,7 +336,7 @@
       }, 1000);
     }
 
-        function pauseTimer() {
+    function pauseTimer() {
       if (!isRunning) return;
       isRunning = false;
       clearInterval(intervalId);
@@ -339,7 +353,7 @@
       updateDisplay();
     }
 
-        function playBeep() {
+    function playBeep() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -352,8 +366,6 @@
 
     applySettingsToUI();
     updateDisplay();
-
-    </script>
-
-    </body>
-    </html>
+  </script>
+</body>
+</html>
