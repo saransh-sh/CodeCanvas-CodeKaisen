@@ -4,11 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kaizen AI – Smart Habit Planner</title>
-   <link rel="stylesheet" href="static/css/style.css" />
-
+  <link rel="stylesheet" href="/static/css/style.css" />
   <style>
-
-    .body { padding: 0; }
+    body { padding: 0; }
     .landing-container {
       max-width: 1080px;
       margin: 0 auto;
@@ -25,8 +23,6 @@
       gap: 16px;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     }
-
-    
     .hero-card {
       display: flex;
       padding: 20px;
@@ -53,8 +49,7 @@
       font-size: 0.8em;
       margin: 0 0 6px;
     }
-
-        .auth-card {
+    .auth-card {
       border: 2px solid var(--border-color);
       border-radius: var(--radius-md);
       padding: 12px;
@@ -77,9 +72,6 @@
       gap: 10px;
       margin-top: 6px;
     }
-
-    
-
     .pill {
       border: 1px dashed var(--border-color);
       background: var(--bg-primary);
@@ -102,8 +94,6 @@
       gap: 12px;
       margin-bottom: 8px;
     }
-
-    
     .why-card, .feature-card {
       padding: 14px;
       border: 1px solid var(--border-light);
@@ -125,8 +115,6 @@
       font-size: 0.9em;
       line-height: 1.5;
     }
-
-    
     .explore-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -140,7 +128,7 @@
       font-size: 0.85em;
       margin-top: 4px;
     }
-
+    /* ── Team section ───────────────────────────────────────────────────────── */
     .team-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -192,8 +180,6 @@
       font-size: 0.82em;
       line-height: 1.4;
     }
-
-        
     .hero-mascot {
   flex: 0 0 140px;
   display: flex;
@@ -207,34 +193,36 @@
   object-fit: contain;
 }
 
-
+/* mobile fix */
 @media (max-width: 768px) {
   .hero-card {
     flex-direction: column;
     text-align: center;
   }
 }
-</style>
+  </style>
 </head>
 <body>
   <div class="landing-container">
 
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="ai.html">AI Chat</a>
-        <a href="pomodoro.html">Pomodoro</a>
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/ai.html">AI Chat</a>
+        <a href="/pomodoro.html">Pomodoro</a>
       </div>
     </header>
 
-     <main class="section-stack">
+    
+
+    <main class="section-stack">
       <section class="hero-card animate-fade-in">
         <div class="hero-mascot">
-  <img src="assets/mascots/landing.png" alt="Kaizen mascot" id="heroMascot" />
+  <img src="https://media.tenor.com/ROZrff3gfMwAAAAi/evernight-dance.gif" alt="Kaizen mascot" id="heroMascot" />
 </div>
 
 <div class="hero-content">
@@ -243,7 +231,7 @@
           <p>Kaizen AI keeps habits, timers, analytics, and coaching inside a single, balanced workspace built on a clean card system.</p>
           <div class="auth-card">
             <div class="auth-section" id="authSection">
-              <button class="btn btn-primary" id="loginBtn" onclick="handleLogin()">
+              <button class="btn btn-primary" id="loginBtn">
                 Login with Google
               </button>
               <p id="loginError"></p>
@@ -251,14 +239,14 @@
             <div class="auth-section hidden" id="loggedInSection">
               <div class="logged-in-bar">
                 <span>Signed in as <strong id="userName"></strong></span>
-                <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">
+                <button class="btn btn-primary" onclick="window.location.href='/dashboard.html'">
                   Go to Dashboard
                 </button>
                 <button class="btn btn-signout" onclick="handleSignOut()">Sign Out</button>
               </div>
             </div>
           </div>
-     <div class="meta-row">
+          <div class="meta-row">
             <div class="pill">Progress dashboards</div>
             <div class="pill">AI-assisted coaching</div>
             <div class="pill">Calm, pixel-inspired UI</div>
@@ -288,9 +276,9 @@
             <p>Scores, goals, and history are grouped by card—balanced spacing keeps the experience readable and calm.</p>
           </div>
         </div>
-    </section>
+      </section>
 
-    <section class="section-card animate-fade-in">
+      <section class="section-card animate-fade-in">
         <div class="section-header">
           <div>
             <p class="eyebrow">Features</p>
@@ -298,7 +286,6 @@
             
           </div>
         </div>
-        
         <div class="card-grid">
           <div class="feature-card">
             <h3>Habit tracking</h3>
@@ -325,10 +312,9 @@
             <p>Past performance is organized into rows and details panels that mirror the rest of the layout.</p>
           </div>
         </div>
-    </section>
+      </section>
 
-
-     <section class="section-card animate-fade-in">
+      <section class="section-card animate-fade-in">
         <div class="section-header">
           <div>
             <p class="eyebrow">Navigate</p>
@@ -357,7 +343,7 @@
           </div>
         </div>
         <div class="team-grid" id="teamGrid">
-
+          <!-- Loaded dynamically from /assets/developers.json -->
         </div>
       </section>
 
@@ -368,9 +354,15 @@
 
   </div>
 
+  <!-- Kaizen AI Enhancements -->
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="static/js/auth.js"></script>
+  <script src="/static/js/firebase-init.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/theme.js"></script>
   <script>
     (function initScrollAnimations() {
       const observer = new IntersectionObserver((entries) => {
@@ -386,9 +378,9 @@
       });
     })();
 
-       async function loadKaizenGifs(id, type) {
+   async function loadKaizenGifs(id, type) {
   try {
-    const res = await fetch("assets/mascots.json");
+    const res = await fetch("/assets/mascots.json");
     const data = await res.json();
 
     const el = document.getElementById(id);
@@ -401,22 +393,20 @@
   } catch (err) {
     console.error("Mascot load failed:", err);
   }
- } 
- loadKaizenGifs("heroMascot", "landing");
- loadKaizenGifs("kaizenLogo", "logo");
-
-
+} 
+loadKaizenGifs("heroMascot", "landing");
+loadKaizenGifs("kaizenLogo", "logo");
 
     async function loadTeam() {
       const grid = document.getElementById("teamGrid");
       if (!grid) return;
       try {
-        const res = await fetch("assets/developers.json");
+        const res = await fetch("/assets/developers.json");
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const devs = await res.json();
         grid.innerHTML = devs.map((dev, i) => `
           <div class="dev-card">
-            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='assets/logo.png'" />
+            <img class="dev-avatar" id="devAvatar${i}" src="${escapeAttr(dev.avatar)}" alt="${escapeAttr(dev.name)}" onerror="this.src='/assets/logo.png'" />
             <p class="dev-role">${escapeHtml(dev.role || "")}</p>
             <h3 class="dev-name">${escapeHtml(dev.name)}</h3>
             <p class="dev-quote">&ldquo;${escapeHtml(dev.quote || "")}&rdquo;</p>
@@ -429,9 +419,6 @@
     }
     loadTeam();
 
-    
-
-
     function escapeHtml(str) {
       return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
@@ -439,24 +426,40 @@
       return String(str).replace(/"/g,"&quot;").replace(/'/g,"&#39;");
     }
 
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        document.getElementById("authSection").classList.add("hidden");
-        document.getElementById("loggedInSection").classList.remove("hidden");
-        document.getElementById("userName").textContent = user.displayName || user.email;
-        syncUser(user);
-      }
+    // Auth state handling – wait for Firebase to initialise before subscribing.
+    authReady.then(() => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          document.getElementById("authSection").classList.add("hidden");
+          document.getElementById("loggedInSection").classList.remove("hidden");
+          document.getElementById("userName").textContent = user.displayName || user.email;
+          syncUser(user);
+        }
+      });
     });
 
     async function handleLogin() {
+      const btn = document.getElementById("loginBtn");
+      const errorEl = document.getElementById("loginError");
+      if (btn.disabled) return;
+      btn.disabled = true;
+      errorEl.textContent = "";
       try {
         const result = await signInWithGoogle();
+        if (!result) return; // duplicate call was suppressed
         await syncUser(result.user);
         window.location.href = "/dashboard.html";
       } catch (e) {
-        document.getElementById("loginError").textContent = e.message;
+        if (e.code !== "auth/popup-closed-by-user" && e.code !== "auth/cancelled-popup-request") {
+          console.error("Login error:", e);
+          errorEl.textContent = e.message;
+        }
+      } finally {
+        btn.disabled = false;
       }
     }
+
+    document.getElementById("loginBtn").addEventListener("click", handleLogin);
 
     function handleSignOut() {
       signOut();
