@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends
 from datetime import date
+
 from backend.database import get_db
 from backend.auth import get_uid
 
 router = APIRouter()
+
 
 @router.get("/history")
 def get_history(uid: str = Depends(get_uid), db=Depends(get_db)):
@@ -22,6 +24,7 @@ def get_history(uid: str = Depends(get_uid), db=Depends(get_db)):
         }
         for d in docs
     ]
+
 
 @router.get("/history/{day}")
 def get_day_detail(day: date, uid: str = Depends(get_uid), db=Depends(get_db)):

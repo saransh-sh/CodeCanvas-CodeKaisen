@@ -1,22 +1,24 @@
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from firebase_admin import firestore
+
 from backend.database import get_db
 from backend.auth import get_uid
 
 router = APIRouter()
 
+
 class HabitIn(BaseModel):
-    name: str
-    category: Optional[str] = None
-    target_minutes: int = 60
+    name: str = Field(..., min_length=1, max_length=100)
+    category: Optional[str] = Field(None, max_length=50)
+    target_minutes: int = Field(60, ge=1, le=1440)
 
 
 class HabitEdit(BaseModel):
-    name: Optional[str] = None
-    category: Optional[str] = None
-    target_minutes: Optional[int] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    category: Optional[str] = Field(None, max_length=50)
+    target_minutes: Optional[int] = Field(None, ge=1, le=1440)
 
 
 @router.get("/habits")
