@@ -1,28 +1,29 @@
-
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import date, timedelta
 from firebase_admin import firestore
+
 from backend.database import get_db
+from backend.auth import get_uid
 
 router = APIRouter()
 
+
 class UserIn(BaseModel):
-    uid: str
-    email: str
-    display_name: Optional[str] = None
+    email: str = Field(..., max_length=254)
+    display_name: Optional[str] = Field(None, max_length=100)
+
 
 @router.post("/users", status_code=201)
-def save_user(data: UserIn, db=Depends(get_db)):
-    user_ref = db.collection("users").document(data.uid)
+def save_user(data: UserIn, uid: str = Depends(get_uid), db=Depends(get_db)):
+    user_ref = db.collection("users").document(uid)
     user_doc = user_ref.get()
     if user_doc.exists:
         if data.display_name:
             user_ref.update({"display_name": data.display_name})
         updated = user_ref.get().to_dict()
-        return {**updated, "id": data.uid}
-    # first time login - create the user
+        return {**updated, "id": uid}
     user_data = {
         "email": data.email,
         "display_name": data.display_name,
@@ -31,10 +32,13 @@ def save_user(data: UserIn, db=Depends(get_db)):
         "created_at": firestore.SERVER_TIMESTAMP,
     }
     user_ref.set(user_data)
-    return {"id": data.uid, "email": data.email, "display_name": data.display_name, "streak": 0, "longest_streak": 0}
+    return {"id": uid, "email": data.email, "display_name": data.display_name, "streak": 0, "longest_streak": 0}
+
 
 @router.get("/users/{uid}")
-def fetch_user(uid: str, db=Depends(get_db)):
+def fetch_user(uid: str, token_uid: str = Depends(get_uid), db=Depends(get_db)):
+    if uid != token_uid:
+        raise HTTPException(status_code=403, detail="access denied")
     user_doc = db.collection("users").document(uid).get()
     if not user_doc.exists:
         raise HTTPException(status_code=404, detail="user not found")
@@ -42,7 +46,9 @@ def fetch_user(uid: str, db=Depends(get_db)):
 
 
 @router.put("/users/{uid}/streak")
-def recalculate_streak(uid: str, db=Depends(get_db)):
+def recalculate_streak(uid: str, token_uid: str = Depends(get_uid), db=Depends(get_db)):
+    if uid != token_uid:
+        raise HTTPException(status_code=403, detail="access denied")
     user_ref = db.collection("users").document(uid)
     user_doc = user_ref.get()
     if not user_doc.exists:
