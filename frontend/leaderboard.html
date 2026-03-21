@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leaderboard – Kaizen AI</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
+    .lb-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    .lb-table th { background: var(--bg-hover); color: var(--accent-dark); padding: 10px 14px; text-align: left; font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.5px; }
+    .lb-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); }
+    .lb-table tr:hover { background: var(--bg-hover); }
+    .lb-row-me { background: rgba(212,120,140,0.08) !important; border-left: 3px solid var(--accent-dark); }
+    .lb-rank { font-weight: bold; color: var(--accent-dark); font-size: 1.1em; min-width: 40px; }
+    .lb-name { font-weight: 600; }
+    .lb-xp { color: var(--accent-dark); font-weight: bold; }
+    .lb-streak { color: var(--text-muted); }
+    .lb-medal { font-size: 1.2em; margin-right: 4px; }
+    .lb-join-section { margin: 16px 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .lb-status { color: var(--text-secondary); font-size: 0.9em; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--accent-dark); color: #fff; padding: 10px 24px; border-radius: 8px; font-size: 0.9em; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html" class="active">Leaderboard</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+
+    <h2>🏆 Leaderboard</h2>
+    <p id="lbDate" style="color:var(--text-secondary);margin:0 0 12px;font-size:0.9em;"></p>
+
+    <div class="lb-join-section">
+      <button class="btn btn-primary" id="lbToggleBtn" style="display:none;" onclick="toggleLeaderboard()">Join Leaderboard</button>
+      <span class="lb-status" id="lbStatus"></span>
+    </div>
+
+    <div class="card">
+      <table class="lb-table" id="lbTable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player</th>
+            <th>XP</th>
+            <th>Streak</th>
+          </tr>
+        </thead>
+        <tbody id="lbBody">
+          <tr><td colspan="4" style="color:var(--text-muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <!-- Kaizen AI Enhancements -->
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/firebase-init.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/theme.js"></script>
+  <script src="/static/js/gamification.js"></script>
+  <script>
+    // Dynamic date
+    (function() {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const mon = now.toLocaleString('en-US', { month: 'short' });
+      const year = now.getFullYear();
+      document.getElementById('lbDate').textContent = `${day} ${mon} ${year}`;
+    })();
+
+    loadKaizenGifs();
+    let userJoined = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    async function toggleLeaderboard() {
+      const btn = document.getElementById('lbToggleBtn');
+      btn.disabled = true;
+      try {
+        if (userJoined) {
+          await apiFetch('/api/leaderboard/opt-out', { method: 'POST' });
+          showToast('You left the leaderboard');
+        } else {
+          await apiFetch('/api/leaderboard/opt-in', { method: 'POST' });
+          showToast('You joined the leaderboard!');
+        }
+        userJoined = !userJoined;
+        updateToggleBtn();
+        await loadLeaderboard();
+      } catch (e) {
+        showToast('Error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function updateToggleBtn() {
+      const btn = document.getElementById('lbToggleBtn');
+      if (userJoined) {
+        btn.textContent = 'Leave Leaderboard';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-sm');
+      } else {
+        btn.textContent = 'Join Leaderboard';
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-sm');
+      }
+    }
+
+    async function loadLeaderboard() {
+      try {
+        const data = await apiFetch('/api/leaderboard');
+        const body = document.getElementById('lbBody');
+        if (!data.length) {
+          body.innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);">No players yet. Be the first to join!</td></tr>';
+          return;
+        }
+        const medals = ['🥇', '🥈', '🥉'];
+        body.innerHTML = data.map((p, i) => `
+          <tr class="${p.is_current_user ? 'lb-row-me' : ''}">
+            <td class="lb-rank">${medals[i] ? `<span class="lb-medal">${medals[i]}</span>` : i + 1}</td>
+            <td class="lb-name">${p.display_name}${p.is_current_user ? ' <span style="font-size:0.8em;color:var(--accent-dark);">(You)</span>' : ''}</td>
+            <td class="lb-xp">${p.xp.toLocaleString()} XP</td>
+            <td class="lb-streak">🔥 ${p.streak}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        document.getElementById('lbBody').innerHTML = '<tr><td colspan="4" style="color:var(--text-muted);">Could not load leaderboard.</td></tr>';
+      }
+    }
+
+    requireAuth(async (user) => {
+      // Check join status
+      try {
+        const status = await apiFetch('/api/leaderboard/status');
+        userJoined = status.joined;
+      } catch (_) {}
+      const btn = document.getElementById('lbToggleBtn');
+      btn.style.display = '';
+      updateToggleBtn();
+      await loadLeaderboard();
+    });
+  </script>
+</body>
+</html>
