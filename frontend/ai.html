@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Assistant – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />    
+  <link rel="stylesheet" href="static/css/theme.css" />
+<link rel="stylesheet" href="static/css/components.css" />
+<script src="static/js/firebase-init.js"></script>
+<script src="static/js/theme.js"></script>
+<script src="static/js/gamification.js"></script>
   <style>
 
     #chatWindow {
@@ -150,7 +155,7 @@
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -161,6 +166,7 @@
         <a href="/ai.html" class="active">AI</a>
         <a href="/pomodoro.html">Pomodoro</a>
         <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
@@ -169,8 +175,8 @@
     <div class="page-heading ai-hero">
 
   <div class="ai-mascot">
-    <img id="aiMascot" />
-  </div>
+  <img src="https://media.tenor.com/Sz-Xdu16b8MAAAAi/gamer-girl-artificial-intelligence.gif" id="aiMascot" />
+</div>
 
   <div>
     <h2>AI Assistant</h2>
@@ -323,10 +329,6 @@
       return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/\n/g,"<br/>");
     }
 
-    async function loadMascot() {
-      await loadKaizenGifs("aiMascot", "assistant");
-    }
-    loadMascot();
   </script>
 
 
