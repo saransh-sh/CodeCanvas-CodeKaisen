@@ -191,7 +191,8 @@ const today = new Date().toISOString().split("T")[0];
           opt.textContent = h.name;
           selectEl.appendChild(opt);
         });
-      } catch (e) {
+      }}
+       catch (e) {
         document.getElementById("habitList").textContent = "Error loading habits.";
       }
     }
