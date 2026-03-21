@@ -1,16 +1,6 @@
-const authReady = (async function initFirebase() {
-  const res = await fetch("/api/config/firebase");
-  if (!res.ok) throw new Error("Could not load Firebase config from server");
-  const firebaseConfig = await res.json();
-  if (!firebase.apps || !firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-})();
-
 async function requireAuth(callback) {
   await authReady;
-  // Return the unsubscribe function so the caller can clean up if needed.
-  return firebase.auth().onAuthStateChanged((user) => {
+  return auth.onAuthStateChanged((user) => {
     if (!user) {
       window.location.href = "/landing.html";
     } else {
@@ -19,21 +9,28 @@ async function requireAuth(callback) {
   });
 }
 
+let isSigningIn = false;
+
 async function signInWithGoogle() {
-  await authReady;
-  return firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  if (isSigningIn) return null;
+  isSigningIn = true;
+  try {
+    await authReady;
+    return await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  } finally {
+    isSigningIn = false;
+  }
 }
 
 async function signOut() {
   await authReady;
-  firebase.auth().signOut().then(() => {
-    window.location.href = "/landing.html";
-  });
+  await auth.signOut();
+  window.location.href = "/landing.html";
 }
 
 async function getIdToken() {
   await authReady;
-  const user = firebase.auth().currentUser;
+  const user = auth.currentUser;
   if (!user) throw new Error("Not authenticated");
   return user.getIdToken();
 }
@@ -65,7 +62,6 @@ async function loadKaizenGifs(mascotImgId, mascotKey) {
     console.warn("Failed to load mascots.json:", err);
   }
 
-
   const logoEl = document.getElementById("kaizenLogo");
   if (logoEl) {
     const logoSrc = (data.logo && data.logo.trim()) || LOGO_FALLBACK;
@@ -75,21 +71,17 @@ async function loadKaizenGifs(mascotImgId, mascotKey) {
   if (mascotImgId && mascotKey) {
     const mascotEl = document.getElementById(mascotImgId);
     if (mascotEl) {
-      const stored = localStorage.getItem("kaizen_mascot_url");
       const preferred = (data[mascotKey] && data[mascotKey].trim()) || "";
       const fallbackGif = (data.fallback && data.fallback.trim()) || LOGO_FALLBACK;
-      mascotEl.src = preferred || stored || fallbackGif;
+      mascotEl.src = preferred || fallbackGif;
     }
   }
 }
 
-
 async function syncUser(user) {
-  await fetch("/api/users", {
+  await apiFetch("/api/users", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      uid: user.uid,
       email: user.email,
       display_name: user.displayName,
     }),
