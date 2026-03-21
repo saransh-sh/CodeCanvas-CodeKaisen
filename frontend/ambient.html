@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ambient Mode – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />
+  <link rel="stylesheet" href="static/css/theme.css" />
+<link rel="stylesheet" href="static/css/components.css" />
+<script src="static/js/firebase-init.js"></script>
+<script src="static/js/theme.js"></script>
 
   <style>
     .clock {
@@ -78,6 +82,23 @@
       display: none;
     }
 
+   
+#ytLofiPlayer iframe {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 56.25vw;
+  min-height: 100vh;
+  min-width: 177.78vh;
+  opacity: 0.4;
+  pointer-events: none;}
+
+#ytAudioPlayer {
+  position: fixed; top: -2px; left: -2px;
+  width: 1px; height: 1px; opacity: 0; pointer-events: none;
+}
+
     </style>
 
 </head>
@@ -85,7 +106,7 @@
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -96,6 +117,7 @@
         <a href="/ai.html">AI</a>
         <a href="/pomodoro.html">Pomodoro</a>
         <a href="/ambient.html" class="active">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html">Profile</a>
       </div>
       <div class="mode-buttons">
@@ -108,7 +130,7 @@
       <div id="minimalMode">
       <div class="mascot-topleft">
         <div class="mascot-container mascot-container-sm" id="mascotArea">
-          <img src="assets/mascots/ambient.png" alt="Ambient mascot" id="ambientMascot" />
+          <img src="https://media.tenor.com/dZ0fjQXjHnAAAAAM/lofi-girl.gif" alt="Ambient mascot" id="ambientMascot" />
         </div>
       </div>
 
@@ -119,24 +141,33 @@
           <div class="date" id="minimalDate"></div>
         </div>
 
-         <div class="card">
-          <h3>Sound Controls</h3>
-          <div class="sound-grid">
-            <button class="btn sound-btn" onclick="toggleNoise()" id="noiseBtn">▶ White Noise</button>
-            <button class="btn sound-btn" onclick="playCustomAudio()" id="customAudioBtn">▶ Custom Audio</button>
-          </div>
-          <label style="font-size:0.85em; color:var(--text-secondary);">
-            Volume:
-            <input type="range" id="noiseVolume" min="0" max="1" step="0.05" value="0.3" oninput="setNoiseVolume(this.value)" style="width:100%; margin-top:4px;" />
-          </label>
-        </div>
-        <div class="card">
-                <h3>Custom Audio URL</h3>
-          <p class="hint">Direct link to an MP3, OGG, or WAV file for background music.</p>
-          <input type="url" id="customAudioUrl" placeholder="https://example.com/lofi-beats.mp3" />
-          <button class="btn save-btn" onclick="saveCustomAudio()">Save Audio URL</button>
-          <p id="audioMsg" class="success-msg"></p>
-        </div>
+<div class="card">
+  <h3>Sound Controls</h3>
+  <div class="sound-grid">
+    <button class="btn sound-btn" onclick="toggleNoise()" id="noiseBtn">▶ White Noise</button>
+    <button class="btn sound-btn" onclick="toggleYouTubeAudio()" id="customAudioBtn">▶ YouTube Music</button>
+  </div>
+  <label style="font-size:0.85em; color:var(--text-secondary);">
+    Volume:
+    <input type="range" id="noiseVolume" min="0" max="1" step="0.05" value="0.3" oninput="setNoiseVolume(this.value)" style="width:100%; margin-top:4px;" />
+  </label>
+</div>
+
+<div class="card">
+  <h3>YouTube Music URL</h3>
+  <p class="hint">Paste a YouTube link or video ID for background music (e.g. jfKfPfyJRdk).</p>
+  <input type="text" id="customAudioUrl" placeholder="https://youtube.com/watch?v=... or video ID" />
+  <button class="btn save-btn" onclick="saveYouTubeAudio()">Save YouTube URL</button>
+  <p id="audioMsg" class="success-msg"></p>
+</div>
+
+<div class="card">
+  <h3>YouTube Lofi Video URL</h3>
+  <p class="hint">Paste a YouTube link or video ID for the LoFi mode background video.</p>
+  <input type="text" id="customVideoUrl" placeholder="https://youtube.com/watch?v=... or video ID" />
+  <button class="btn save-btn" onclick="saveYouTubeVideo()">Save YouTube URL</button>
+  <p id="videoMsg" class="success-msg"></p>
+</div>
 
         <div class="card">
           <h3>Custom LoFi Video URL</h3>
@@ -152,16 +183,17 @@
   </div>
   <div id="lofiMode" class="hidden">
     <div id="videoContainer">
-      <video id="bgVideo" autoplay loop muted playsinline>
-        <source src="" type="video/mp4" />
-      </video>
+      <div id="videoContainer">
+  <div id="ytLofiPlayer"></div>
+</div>
     </div>
 
     <div class="lofi-overlay">
       <div class="lofi-clock" id="lofiClock">00:00:00</div>
       <div>
         <button class="btn" onclick="toggleNoise()" id="lofiNoiseBtn">▶ White Noise</button>
-        <button class="btn" onclick="playCustomAudio()" id="lofiCustomAudioBtn">▶ Audio</button>
+        <button class="btn" onclick="toggleYouTubeAudio()" id="lofiCustomAudioBtn">▶ YouTube Music</button>
+        <div id="ytAudioPlayer"></div>
         <label style="color:#ccc; font-size:0.85em; margin-left:8px;">Vol: <input type="range" id="lofiVolume" min="0" max="1" step="0.05" value="0.3" oninput="setNoiseVolume(this.value)" /></label>
       </div>
       <div>
@@ -175,182 +207,218 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="static/js/auth.js"></script>
     <script>
-    requireAuth(() => {});
-    const savedAudioUrl = localStorage.getItem("kaizen_ambient_audio");
-    const savedVideoUrl = localStorage.getItem("kaizen_ambient_video");
-    if (savedAudioUrl) document.getElementById("customAudioUrl").value = savedAudioUrl;
-    if (savedVideoUrl) document.getElementById("customVideoUrl").value = savedVideoUrl;
-        function updateClocks() {
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString();
-      const dateStr = now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-      document.getElementById("minimalClock").textContent = timeStr;
-      document.getElementById("minimalDate").textContent  = dateStr;
-      document.getElementById("lofiClock").textContent    = timeStr;
+requireAuth(() => {});
+const DEFAULT_VIDEO_ID = 'jfKfPfyJRdk';
+const savedAudioUrl = localStorage.getItem('kaizen_youtube_audio');
+const savedVideoUrl = localStorage.getItem('kaizen_youtube_video');
+if (savedAudioUrl) document.getElementById('customAudioUrl').value = savedAudioUrl;
+if (savedVideoUrl) document.getElementById('customVideoUrl').value = savedVideoUrl;
+
+function updateClocks() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString();
+  const dateStr = now.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('minimalClock').textContent = timeStr;
+  document.getElementById('minimalDate').textContent  = dateStr;
+  document.getElementById('lofiClock').textContent    = timeStr;
+}
+updateClocks();
+setInterval(updateClocks, 1000);
+
+let ytPlayer      = null;
+let ytApiReady    = false;
+let ytApiLoading  = false;
+let ytPendingInit = null;
+let ytPlaying     = false;
+let currentVolume = 0.3;
+
+function loadYTApi() {
+  if (window.YT && window.YT.Player) { ytApiReady = true; return; }
+  if (ytApiLoading) return;
+  ytApiLoading = true;
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+
+window.onYouTubeIframeAPIReady = function () {
+  ytApiReady = true;
+  if (ytPendingInit) {
+    const { containerId, videoId, visible } = ytPendingInit;
+    ytPendingInit = null;
+    createYTPlayer(containerId, videoId, visible);
+  }
+};
+
+function extractVideoId(input) {
+  input = (input || '').trim();
+  let m = input.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  m = input.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+  if (m) return m[1];
+  if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+  return null;
+}
+
+function destroyPlayer() {
+  if (ytPlayer) {
+    try { ytPlayer.destroy(); } catch (_) {}
+    ytPlayer = null;
+  }
+  ytPlaying = false;
+}
+
+function createYTPlayer(containerId, videoId, visible) {
+  destroyPlayer();
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  const innerDiv = document.createElement('div');
+  innerDiv.id = containerId + '_inner';
+  container.appendChild(innerDiv);
+  const height = visible ? '100%' : '1';
+  const width  = visible ? '100%' : '1';
+  ytPlayer = new YT.Player(innerDiv.id, {
+    height, width, videoId,
+    playerVars: { autoplay: 1, loop: 1, playlist: videoId, controls: 0, rel: 0, modestbranding: 1, playsinline: 1, enablejsapi: 1 },
+    events: {
+      onReady: function (e) { e.target.setVolume(Math.round(currentVolume * 100)); e.target.playVideo(); ytPlaying = true; },
+      onStateChange: function (e) { if (e.data === YT.PlayerState.ENDED) e.target.playVideo(); }
     }
-    updateClocks();
-    setInterval(updateClocks, 1000);
-        function switchMode(mode) {
-      if (mode === "lofi") {
-        document.getElementById("minimalMode").classList.add("hidden");
-        document.getElementById("lofiMode").classList.remove("hidden");
+  });
+}
 
-        const videoUrl = localStorage.getItem("kaizen_ambient_video");
-        if (videoUrl) {
-          const video = document.getElementById("bgVideo");
-          video.querySelector("source").src = videoUrl;
-          video.load();
-          video.play().catch(() => {});
-        }
-      } else {
-        document.getElementById("lofiMode").classList.add("hidden");
-        document.getElementById("minimalMode").classList.remove("hidden");
-      }
-    }
-        let audioCtx = null;
-    let noiseNode = null;
-    let gainNode  = null;
-    let noiseOn   = false;
+function initYTPlayer(containerId, videoId, visible) {
+  loadYTApi();
+  if (ytApiReady) {
+    createYTPlayer(containerId, videoId, visible);
+  } else {
+    ytPendingInit = { containerId, videoId, visible };
+  }
+}
 
-    function createWhiteNoise(volume) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const bufferSize = 2 * audioCtx.sampleRate;
-      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
-      noiseNode = audioCtx.createBufferSource();
-      noiseNode.buffer = buffer;
-      noiseNode.loop = true;
+function switchMode(mode) {
+  if (mode === 'lofi') {
+    document.getElementById('minimalMode').classList.add('hidden');
+    document.getElementById('lofiMode').classList.remove('hidden');
+    const raw = localStorage.getItem('kaizen_youtube_video') || '';
+    const videoId = extractVideoId(raw) || DEFAULT_VIDEO_ID;
+    initYTPlayer('ytLofiPlayer', videoId, true);
+    updateYTButtons(true);
+  } else {
+    document.getElementById('lofiMode').classList.add('hidden');
+    document.getElementById('minimalMode').classList.remove('hidden');
+    destroyPlayer();
+    updateYTButtons(false);
+  }
+}
 
-      gainNode = audioCtx.createGain();
-      gainNode.gain.value = volume;
+function toggleYouTubeAudio() {
+  stopNoise();
+  if (ytPlaying && ytPlayer) {
+    destroyPlayer();
+    updateYTButtons(false);
+    return;
+  }
+  const raw = localStorage.getItem('kaizen_youtube_audio') || '';
+  const videoId = extractVideoId(raw) || DEFAULT_VIDEO_ID;
+  initYTPlayer('ytAudioPlayer', videoId, false);
+  updateYTButtons(true);
+}
 
-      noiseNode.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      noiseNode.start();
-    }
+function updateYTButtons(playing) {
+  const label = playing ? '⏹ YouTube Music' : '▶ YouTube Music';
+  document.getElementById('customAudioBtn').textContent = label;
+  if (playing) document.getElementById('customAudioBtn').classList.add('active');
+  else document.getElementById('customAudioBtn').classList.remove('active');
+  const lofiBtn = document.getElementById('lofiCustomAudioBtn');
+  if (lofiBtn) {
+    lofiBtn.textContent = label;
+    if (playing) lofiBtn.classList.add('active');
+    else lofiBtn.classList.remove('active');
+  }
+}
 
-    function toggleNoise() {
-  
-      stopCustomAudio();
+function saveYouTubeAudio() {
+  const val = document.getElementById('customAudioUrl').value.trim();
+  if (val) { localStorage.setItem('kaizen_youtube_audio', val); document.getElementById('audioMsg').textContent = 'YouTube URL saved!'; }
+  else { localStorage.removeItem('kaizen_youtube_audio'); document.getElementById('audioMsg').textContent = 'YouTube URL cleared.'; }
+}
 
-      if (noiseOn) {
-        if (noiseNode) { noiseNode.stop(); noiseNode = null; }
-        if (audioCtx) { audioCtx.close(); audioCtx = null; }
-        noiseOn = false;
-        document.getElementById("noiseBtn").textContent = "▶ White Noise";
-        document.getElementById("noiseBtn").classList.remove("active");
-        document.getElementById("lofiNoiseBtn").textContent = "▶ White Noise";
-      } else {
-        const vol = parseFloat(document.getElementById("noiseVolume").value);
-        createWhiteNoise(vol);
-        noiseOn = true;
-        document.getElementById("noiseBtn").textContent = "⏹ White Noise";
-        document.getElementById("noiseBtn").classList.add("active");
-        document.getElementById("lofiNoiseBtn").textContent = "⏹ White Noise";
-      }
-    }
+function saveYouTubeVideo() {
+  const val = document.getElementById('customVideoUrl').value.trim();
+  if (val) { localStorage.setItem('kaizen_youtube_video', val); document.getElementById('videoMsg').textContent = 'YouTube URL saved! Switch to LoFi mode to see it.'; }
+  else { localStorage.removeItem('kaizen_youtube_video'); document.getElementById('videoMsg').textContent = 'YouTube URL cleared.'; }
+}
 
-    function setNoiseVolume(val) {
-      if (gainNode) gainNode.gain.value = parseFloat(val);
-      if (customAudioEl) customAudioEl.volume = parseFloat(val);
+let audioCtx = null;
+let noiseNode = null;
+let gainNode  = null;
+let noiseOn   = false;
 
-      document.getElementById("noiseVolume").value = val;
-      document.getElementById("lofiVolume").value  = val;
-    }
-        let customAudioEl = null;
-    let customAudioPlaying = false;
+function createWhiteNoise(volume) {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  noiseNode = audioCtx.createBufferSource();
+  noiseNode.buffer = buffer;
+  noiseNode.loop = true;
+  gainNode = audioCtx.createGain();
+  gainNode.gain.value = volume;
+  noiseNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+  noiseNode.start();
+}
 
-    function saveCustomAudio() {
-      const url = document.getElementById("customAudioUrl").value.trim();
-      if (url) {
-        localStorage.setItem("kaizen_ambient_audio", url);
-        document.getElementById("audioMsg").textContent = "Audio URL saved!";
-      } else {
-        localStorage.removeItem("kaizen_ambient_audio");
-        document.getElementById("audioMsg").textContent = "Audio URL cleared.";
-      }
-    }
+function stopNoise() {
+  if (!noiseOn) return;
+  if (noiseNode) { noiseNode.stop(); noiseNode = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  noiseOn = false;
+  document.getElementById('noiseBtn').textContent = '▶ White Noise';
+  document.getElementById('noiseBtn').classList.remove('active');
+  document.getElementById('lofiNoiseBtn').textContent = '▶ White Noise';
+}
 
-    function saveCustomVideo() {
-      const url = document.getElementById("customVideoUrl").value.trim();
-      if (url) {
-        localStorage.setItem("kaizen_ambient_video", url);
-        document.getElementById("videoMsg").textContent = "Video URL saved! Switch to LoFi mode to see it.";
-      } else {
-        localStorage.removeItem("kaizen_ambient_video");
-        document.getElementById("videoMsg").textContent = "Video URL cleared.";
-      }
-    }
+function toggleNoise() {
+  if (ytPlaying && ytPlayer) { destroyPlayer(); updateYTButtons(false); }
+  if (noiseOn) {
+    stopNoise();
+  } else {
+    const vol = parseFloat(document.getElementById('noiseVolume').value);
+    createWhiteNoise(vol);
+    noiseOn = true;
+    document.getElementById('noiseBtn').textContent = '⏹ White Noise';
+    document.getElementById('noiseBtn').classList.add('active');
+    document.getElementById('lofiNoiseBtn').textContent = '⏹ White Noise';
+  }
+}
 
-    function playCustomAudio() {
-      const audioUrl = localStorage.getItem("kaizen_ambient_audio");
-      if (!audioUrl) {
-        alert("No custom audio URL saved. Enter a URL above and click Save.");
-        return;
-      }
-       if (noiseOn) {
-        if (noiseNode) { noiseNode.stop(); noiseNode = null; }
-        if (audioCtx) { audioCtx.close(); audioCtx = null; }
-        noiseOn = false;
-        document.getElementById("noiseBtn").textContent = "▶ White Noise";
-        document.getElementById("noiseBtn").classList.remove("active");
-        document.getElementById("lofiNoiseBtn").textContent = "▶ White Noise";
-      }
+function setNoiseVolume(val) {
+  currentVolume = parseFloat(val);
+  if (gainNode) gainNode.gain.value = currentVolume;
+  if (ytPlayer && typeof ytPlayer.setVolume === 'function') ytPlayer.setVolume(Math.round(currentVolume * 100));
+  document.getElementById('noiseVolume').value = val;
+  document.getElementById('lofiVolume').value  = val;
+}
 
-      if (customAudioPlaying) {
-        stopCustomAudio();
-        return;
-      }
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
 
-      customAudioEl = new Audio(audioUrl);
-      customAudioEl.loop = true;
-      customAudioEl.volume = parseFloat(document.getElementById("noiseVolume").value || document.getElementById("lofiVolume").value);
-      customAudioEl.play().catch(e => alert("Could not play audio: " + e.message));
-      customAudioPlaying = true;
-      document.getElementById("customAudioBtn").textContent = "⏹ Custom Audio";
-      document.getElementById("customAudioBtn").classList.add("active");
-      if (document.getElementById("lofiCustomAudioBtn")) {
-        document.getElementById("lofiCustomAudioBtn").textContent = "⏹ Audio";
-      }
-    }
-        function stopCustomAudio() {
-      if (customAudioEl) {
-        customAudioEl.pause();
-        customAudioEl.currentTime = 0;
-        customAudioEl = null;
-      }
-      customAudioPlaying = false;
-      document.getElementById("customAudioBtn").textContent = "▶ Custom Audio";
-      document.getElementById("customAudioBtn").classList.remove("active");
-      if (document.getElementById("lofiCustomAudioBtn")) {
-        document.getElementById("lofiCustomAudioBtn").textContent = "▶ Audio";
-      }
-    }
+document.addEventListener('fullscreenchange', () => {
+  const btn = document.getElementById('fullscreenBtn');
+  btn.textContent = document.fullscreenElement ? '⛶ Exit Fullscreen' : '⛶ Fullscreen';
+});
 
-        function toggleFullscreen() {
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
-    }
-
-    document.addEventListener("fullscreenchange", () => {
-      const btn = document.getElementById("fullscreenBtn");
-      if (document.fullscreenElement) {
-        btn.textContent = "⛶ Exit Fullscreen";
-      } else {
-        btn.textContent = "⛶ Fullscreen";
-      }
-    });
-
-        async function loadMascot() {
-      await loadKaizenGifs("ambientMascot", "ambient");
-    }
-    loadMascot();
+async function loadMascot() {
+  await loadKaizenGifs('ambientMascot', 'ambient');
+}
+loadMascot();
+loadYTApi();
   </script>
 </body>
 </html>

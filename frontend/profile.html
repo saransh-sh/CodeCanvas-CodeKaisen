@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile – Kaizen AI</title>
-  <link rel="stylesheet" href="static/css/style.css" />
-
-   <style>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
     .profile-header {
       display: flex;
       align-items: center;
@@ -80,12 +79,12 @@
     }
     .photo-msg { color: var(--accent-dark); }
   </style>
-  </head>
+</head>
 <body>
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="/assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -96,12 +95,13 @@
         <a href="/ai.html">AI</a>
         <a href="/pomodoro.html">Pomodoro</a>
         <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html" class="active">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
 
-        <div class="profile-header">
+    <div class="profile-header">
       <div class="avatar" id="avatar">Photo</div>
       <div>
         <div class="profile-name" id="profileName">Loading…</div>
@@ -138,7 +138,17 @@
       </div>
     </div>
 
-        <div class="section">
+    <div class="section">
+      <h3>Leaderboard</h3>
+      <div class="card">
+        <p class="text-muted text-sm">Join the leaderboard to compete with other Kaizen users. Only your display name, XP, and streak are visible.</p>
+        <button class="btn btn-primary" id="lbToggleBtn" style="display:none;" onclick="toggleLeaderboard()">Join Leaderboard</button>
+        <span id="lbStatusMsg" style="margin-left:8px;color:var(--accent-dark);font-size:0.9em;"></span>
+        <p style="margin-top:8px;"><a href="/leaderboard.html" style="color:var(--accent-dark);">View Leaderboard →</a></p>
+      </div>
+    </div>
+
+    <div class="section">
       <h3>Profile Photo</h3>
       <div class="card">
         <p class="text-muted text-sm">Upload a profile photo (PNG, JPG, or GIF) that will appear across the app.</p>
@@ -157,10 +167,18 @@
     </div>
   </div>
 
+  <div class="toast" id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--accent-dark,#b85a6e);color:#fff;padding:10px 24px;border-radius:8px;font-size:0.9em;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none;"></div>
 
-      <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <!-- Kaizen AI Enhancements -->
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="static/js/auth.js"></script>
+    <script src="/static/js/firebase-init.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/gamification.js"></script>
     <script>
     const PROFILE_FALLBACK = "https://media.tenor.com/aJ8Y6x7QDSkAAAAM/pixel-portrait.gif";
     loadKaizenGifs();
@@ -180,13 +198,45 @@
       if (target && src) target.innerHTML = `<img src="${src}" alt="avatar" />`;
     }
 
-        requireAuth(async (user) => {
+    let lbJoined = false;
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.opacity = '1';
+      setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    }
+
+    async function toggleLeaderboard() {
+      const btn = document.getElementById('lbToggleBtn');
+      btn.disabled = true;
+      try {
+        if (lbJoined) {
+          await apiFetch('/api/leaderboard/opt-out', { method: 'POST' });
+          showToast('You left the leaderboard');
+        } else {
+          await apiFetch('/api/leaderboard/opt-in', { method: 'POST' });
+          showToast('You joined the leaderboard!');
+        }
+        lbJoined = !lbJoined;
+        updateLbBtn();
+      } catch (e) { showToast('Error: ' + e.message); }
+      finally { btn.disabled = false; }
+    }
+
+    function updateLbBtn() {
+      const btn = document.getElementById('lbToggleBtn');
+      btn.textContent = lbJoined ? 'Leave Leaderboard' : 'Join Leaderboard';
+    }
+
+    requireAuth(async (user) => {
       // Basic profile info from Firebase Auth
       document.getElementById("profileName").textContent = user.displayName || "Anonymous";
       document.getElementById("profileEmail").textContent = user.email || "";
       const fallbackAvatar = await resolveProfileFallback();
       applyAvatar(user.photoURL || fallbackAvatar);
 
+      // Load user data from backend
       try {
         const userData = await apiFetch(`/api/users/${user.uid}`);
         document.getElementById("statStreak").textContent = userData.streak || 0;
@@ -199,18 +249,20 @@
         }
       } catch (_) {}
 
-            try {
+      // Recalculate streak
+      try {
         const streakData = await apiFetch(`/api/users/${user.uid}/streak`, { method: "PUT" });
         document.getElementById("statStreak").textContent = streakData.streak || 0;
         document.getElementById("statLongest").textContent = streakData.longest_streak || 0;
       } catch (_) {}
 
+      // Load habits count
       try {
         const habits = await apiFetch("/api/habits");
         document.getElementById("statHabits").textContent = habits.length;
       } catch (_) {}
 
- 
+      // Load activity stats
       try {
         const logs = await apiFetch("/api/activity");
         document.getElementById("statLogs").textContent = logs.length;
@@ -218,7 +270,7 @@
         document.getElementById("statMinutes").textContent = totalMinutes;
       } catch (_) {}
 
-
+      // Load average productivity from history
       try {
         const history = await apiFetch("/api/history");
         if (history.length) {
@@ -229,12 +281,22 @@
         }
       } catch (_) {}
 
-            const savedPhoto = localStorage.getItem("kaizen_mascot_url");
+      // Load saved profile photo
+      const savedPhoto = localStorage.getItem("kaizen_mascot_url");
       if (savedPhoto) {
         document.getElementById("profilePhotoUrl").value = savedPhoto.startsWith("data:") ? "" : savedPhoto;
         showPhotoPreview(savedPhoto);
         applyAvatar(savedPhoto);
       }
+
+      // Leaderboard status
+      try {
+        const status = await apiFetch('/api/leaderboard/status');
+        lbJoined = status.joined;
+      } catch (_) {}
+      const lbBtn = document.getElementById('lbToggleBtn');
+      lbBtn.style.display = '';
+      updateLbBtn();
     });
 
     function handlePhotoUpload(input) {
@@ -252,7 +314,7 @@
       reader.readAsDataURL(file);
     }
 
-        function saveProfilePhoto() {
+    function saveProfilePhoto() {
       const url = document.getElementById("profilePhotoUrl").value.trim();
       if (url) {
         localStorage.setItem("kaizen_mascot_url", url);
@@ -270,15 +332,6 @@
       document.getElementById("profilePhotoPreview").src = url;
       document.getElementById("profilePhotoPreviewContainer").style.display = "block";
     }
-
-
-
-
-
-
-    </script>
-
-
-
+  </script>
 </body>
 </html>
