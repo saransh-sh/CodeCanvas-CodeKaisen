@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>History – Kaizen AI</title>
-  <link rel="stylesheet" href="static/css/style.css" />
-
-    <style>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <style>
     .day-row {
       display: flex;
       justify-content: space-between;
@@ -25,7 +24,7 @@
       background: var(--bg-card);
       box-shadow: var(--shadow-sm);
     }
-        .detail-panel h3 { color: var(--accent-dark); }
+    .detail-panel h3 { color: var(--accent-dark); }
     .detail-panel h4 { color: var(--text-secondary); margin: 12px 0 4px; }
     ul { margin: 4px 0; padding-left: 20px; }
     .history-page-header {
@@ -59,6 +58,8 @@
   height: 60px;
   object-fit: contain;
 }
+
+/* mobile */
 @media (max-width: 768px) {
   .history-hero {
     flex-direction: column;
@@ -72,14 +73,13 @@
 .history-mascot img:hover {
   transform: scale(1.1) rotate(-2deg);
 }
-
-    </style>
-  </head>
+  </style>
+</head>
 <body>
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -90,16 +90,22 @@
         <a href="/ai.html">AI</a>
         <a href="/pomodoro.html">Pomodoro</a>
         <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
         <a href="/profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
     </header>
+
+    
+
     <div class="history-page-header section history-hero">
 
+  <!-- LEFT GIF -->
   <div class="history-mascot">
-    <img id="historyMascot" />
+    <img src="https://media.tenor.com/AhL_Pc8SB9gAAAAi/sparkle-hsr.gif" id="historyMascot" />
   </div>
 
+  <!-- RIGHT TEXT -->
   <div>
     <h2>History</h2>
     <p>Select a date to open the matching detail card.</p>
@@ -121,16 +127,22 @@
     </div>
   </div>
 
+  <!-- Kaizen AI Enhancements -->
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="static/js/auth.js"></script>
+  <script src="/static/js/firebase-init.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/theme.js"></script>
   <script>
     async function loadMascot() {
       await loadKaizenGifs("historyMascot", "history");
     }
     loadMascot();
 
-        function scoreClass(score) {
+    function scoreClass(score) {
       if (score >= 70) return "score-green";
       if (score >= 40) return "score-yellow";
       return "score-red";
@@ -153,7 +165,7 @@
       }
     });
 
-        async function loadDay(dateStr) {
+    async function loadDay(dateStr) {
       try {
         const data = await apiFetch(`/api/history/${dateStr}`);
         document.getElementById("detailPanel").classList.remove("hidden");
@@ -169,8 +181,6 @@
         alert("Could not load details: " + e.message);
       }
     }
-
   </script>
-
 </body>
 </html>
