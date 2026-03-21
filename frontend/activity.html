@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Activity – Kaizen AI</title>
   <link rel="stylesheet" href="static/css/style.css" />
+  <link rel="stylesheet" href="static/css/theme.css" />
+  <link rel="stylesheet" href="static/css/components.css" />
+  <script src="static/js/firebase-init.js"></script>
+  <script src="static/js/theme.js"></script>
   <style>
     .habit-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-light); padding: 6px 0; }
     .log-item { border-bottom: 1px solid var(--border-light); padding: 4px 0; }
@@ -25,7 +29,7 @@
   <div class="container">
     <header class="kaizen-header">
       <div class="kaizen-logo">
-        <img src="assets/logo.png" alt="Kaizen AI logo" id="kaizenLogo" />
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
         <span>Kaizen AI</span>
       </div>
       <div class="nav-links">
@@ -36,6 +40,7 @@
         <a href="ai.html">AI</a>
         <a href="pomodoro.html">Pomodoro</a>
         <a href="ambient.html">Ambient</a>
+        <a href="leaderboard.html">Leaderboard</a>
         <a href="profile.html">Profile</a>
       </div>
       <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
@@ -43,6 +48,7 @@
     </div>
 
      <h2>Activity &amp; Habits</h2>
+     <p id="activityDate" style="color:var(--text-secondary);margin:0 0 8px;font-size:0.95em;"></p>
 
     <div class="grid-2">
     
@@ -60,7 +66,7 @@
           <input type="number" id="logMinutes" min="1" value="30" />
           <label>Date</label>
           <input type="date" id="logDate" />
-          <button class="btn btn-primary" onclick="logActivity()">Log Activity</button>
+          <button id="logActivityBtn" class="btn btn-primary" onclick="logActivity()">Log Activity</button>
           <p id="logMsg"></p>
         </div>
 
@@ -112,6 +118,13 @@ const today = new Date().toISOString().split("T")[0];
     document.getElementById("logDate").value = today;
     document.getElementById("noteDate").value = today;
     loadKaizenGifs();
+    (function() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const mon = now.toLocaleString('en-US', { month: 'short' });
+  const year = now.getFullYear();
+  document.getElementById('activityDate').textContent = `${day} ${mon} ${year}`;
+})();
 
     let targetMinutes = 60;
     let cachedHabits = [];
@@ -153,12 +166,23 @@ const today = new Date().toISOString().split("T")[0];
         for (const [category, items] of Object.entries(groups)) {
           html += `<div class="category-header">${category}</div>`;
           html += items.map(h =>
-            `<div class="habit-item">
-              <span>• <strong>${h.name}</strong> – ${h.target_minutes} min</span>
-              <button class="btn btn-sm" onclick="deleteHabit('${h.id}')">✕</button>
-            </div>`
-          ).join("");
-        }
+  `<div class="habit-item" id="habit-row-${h.id}">
+    <span>• <strong>${h.name}</strong> – ${h.target_minutes} min</span>
+    <span style="display:flex;gap:4px;">
+      <button class="btn btn-sm" onclick="startEditHabit('${h.id}')">✎</button>
+      <button class="btn btn-sm" onclick="deleteHabit('${h.id}')">✕</button>
+    </span>
+  </div>
+  <div class="habit-edit-form hidden" id="habit-edit-${h.id}">
+    <input type="text" id="hedit-name-${h.id}" placeholder="Habit name" value="${h.name.replace(/"/g,'&quot;')}" />
+    <input type="text" id="hedit-cat-${h.id}" placeholder="Category" value="${(h.category||"").replace(/"/g,'&quot;')}" />
+    <input type="number" id="hedit-target-${h.id}" placeholder="Target minutes" min="1" value="${h.target_minutes}" />
+    <div class="habit-edit-row">
+      <button class="btn btn-primary btn-sm" onclick="saveHabitEdit('${h.id}')">Save</button>
+      <button class="btn btn-sm" onclick="cancelHabitEdit('${h.id}')">Cancel</button>
+    </div>
+  </div>`
+).join("");
         listEl.innerHTML = html;
 
         habits.forEach(h => {
@@ -214,36 +238,117 @@ const today = new Date().toISOString().split("T")[0];
       } catch (e) { alert(e.message); }
     }
 
+    function startEditHabit(id) {
+  document.getElementById(`habit-row-${id}`).classList.add("hidden");
+  document.getElementById(`habit-edit-${id}`).classList.remove("hidden");
+}
+
+function cancelHabitEdit(id) {
+  document.getElementById(`habit-row-${id}`).classList.remove("hidden");
+  document.getElementById(`habit-edit-${id}`).classList.add("hidden");
+}
+
+async function saveHabitEdit(id) {
+  const name = document.getElementById(`hedit-name-${id}`).value.trim();
+  const category = document.getElementById(`hedit-cat-${id}`).value.trim();
+  const target_minutes = parseInt(document.getElementById(`hedit-target-${id}`).value) || 60;
+  if (!name) { alert("Habit name is required."); return; }
+  try {
+    await apiFetch(`/api/habits/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ name, category, target_minutes }),
+    });
+    await loadHabits();
+  } catch (e) { alert(e.message); }
+}
+
 
      async function loadTodayLogs() {
-      try {
-        const logs = await apiFetch(`/api/activity?log_date=${today}`);
-        const el = document.getElementById("todayLogs");
-        if (!logs.length) { el.textContent = "No activity logged today."; return; }
-        el.innerHTML = logs.map(l =>
-          `<div class="log-item">${l.habit_name}: <strong>${l.minutes_spent} min</strong>
-           <button class="btn btn-sm" onclick="deleteLog('${l.id}')">✕</button></div>`
-        ).join("");
-      } catch (_) {}
-    }
+  try {
+    const logs = await apiFetch(`/api/activity?log_date=${today}`);
+    const el = document.getElementById("todayLogs");
+    if (!logs.length) { el.textContent = "No activity logged today."; return; }
+    el.innerHTML = logs.map(l =>
+      `<div class="log-item" id="log-row-${l.id}">
+        <div class="log-item-row">
+          <span>${l.habit_name}: <strong>${l.minutes_spent} min</strong></span>
+          <button class="btn btn-sm" onclick="startEditLog('${l.id}')">✎</button>
+          <button class="btn btn-sm" onclick="deleteLog('${l.id}')">✕</button>
+        </div>
+        <div class="log-edit-form hidden" id="log-edit-${l.id}">
+          <select id="ledit-habit-${l.id}"></select>
+          <input type="number" id="ledit-mins-${l.id}" min="1" value="${l.minutes_spent}" />
+          <input type="date" id="ledit-date-${l.id}" value="${l.log_date}" />
+          <div class="habit-edit-row">
+            <button class="btn btn-primary btn-sm" onclick="saveLogEdit('${l.id}')">Save</button>
+            <button class="btn btn-sm" onclick="cancelLogEdit('${l.id}')">Cancel</button>
+          </div>
+        </div>
+      </div>`
+    ).join("");
+    logs.forEach(l => {
+      const sel = document.getElementById(`ledit-habit-${l.id}`);
+      if (!sel) return;
+      cachedHabits.forEach(h => {
+        const opt = document.createElement("option");
+        opt.value = h.id;
+        opt.textContent = h.name;
+        if (h.id === l.habit_id || (!l.habit_id && h.name === l.habit_name)) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    });
+  } catch (_) {}
+}
+
+      function startEditLog(id) {
+  document.getElementById(`log-row-${id}`).querySelector('.log-item-row').classList.add("hidden");
+  document.getElementById(`log-edit-${id}`).classList.remove("hidden");
+}
+
+function cancelLogEdit(id) {
+  document.getElementById(`log-row-${id}`).querySelector('.log-item-row').classList.remove("hidden");
+  document.getElementById(`log-edit-${id}`).classList.add("hidden");
+}
+
+async function saveLogEdit(id) {
+  const selEl = document.getElementById(`ledit-habit-${id}`);
+  const habit_id = selEl ? selEl.value : null;
+  const habit_name = selEl ? selEl.options[selEl.selectedIndex].text : "";
+  const minutes_spent = parseInt(document.getElementById(`ledit-mins-${id}`).value);
+  const log_date = document.getElementById(`ledit-date-${id}`).value;
+  if (!habit_name) { alert("Select a habit."); return; }
+  if (!minutes_spent || minutes_spent < 1) { alert("Enter valid minutes."); return; }
+  try {
+    await apiFetch(`/api/activity/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ habit_id, habit_name, minutes_spent, log_date }),
+    });
+    await loadTodayLogs();
+  } catch (e) { alert(e.message); }
+}
 
     async function logActivity() {
-      const habitSelect = document.getElementById("logHabitSelect");
-      const habit_id = habitSelect.value || null;
-      const habit_name = habitSelect.options[habitSelect.selectedIndex]?.text || "";
-      const minutes_spent = parseInt(document.getElementById("logMinutes").value);
-      const log_date = document.getElementById("logDate").value;
-      if (!habit_name || habit_name === "-- select --") { document.getElementById("logMsg").textContent = "Select a habit."; return; }
-      if (!minutes_spent || minutes_spent < 1) { document.getElementById("logMsg").textContent = "Enter valid minutes."; return; }
-      try {
-        await apiFetch("/api/activity", {
-          method: "POST",
-          body: JSON.stringify({ habit_id, habit_name, minutes_spent, log_date }),
-        });
-        document.getElementById("logMsg").textContent = "Activity logged!";
-        await loadTodayLogs();
-      } catch (e) { document.getElementById("logMsg").textContent = e.message; }
+  const habitSelect = document.getElementById("logHabitSelect");
+  const habit_id = habitSelect.value || null;
+  const habit_name = habitSelect.options[habitSelect.selectedIndex]?.text || "";
+  const minutes_spent = parseInt(document.getElementById("logMinutes").value);
+  const log_date = document.getElementById("logDate").value;
+  if (!habit_name || habit_name === "-- select --") { document.getElementById("logMsg").textContent = "Select a habit."; return; }
+  if (!minutes_spent || minutes_spent < 1) { document.getElementById("logMsg").textContent = "Enter valid minutes."; return; }
+  try {
+    const response = await apiFetch("/api/activity", {
+      method: "POST",
+      body: JSON.stringify({ habit_id, habit_name, minutes_spent, log_date }),
+    });
+    document.getElementById("logMsg").textContent = "Activity logged!";
+    await loadTodayLogs();
+    if (typeof window.kzShowXPGain === 'function') {
+      const xpGained = response.xp_gained || 5;
+      const logBtn = document.getElementById('logActivityBtn');
+      window.kzShowXPGain(xpGained, logBtn);
     }
+  } catch (e) { document.getElementById("logMsg").textContent = e.message; }
+}
 
     async function deleteLog(id) {
       try {
