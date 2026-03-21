@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel – Kaizen AI</title>
+  <link rel="stylesheet" href="static/css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="kaizen-header">
+      <div class="kaizen-logo">
+        <img src="https://media.tenor.com/1IUGHB0K5tUAAAAi/evernight-hsr.gif" alt="Kaizen AI logo" id="kaizenLogo" />
+        <span>Kaizen AI</span>
+      </div>
+      <div class="nav-links">
+        <a href="/dashboard.html">Dashboard</a>
+        <a href="/activity.html">Activity</a>
+        <a href="/graphs.html">Graphs</a>
+        <a href="/history.html">History</a>
+        <a href="/ai.html">AI</a>
+        <a href="/pomodoro.html">Pomodoro</a>
+        <a href="/ambient.html">Ambient</a>
+        <a href="/leaderboard.html">Leaderboard</a>
+        <a href="/profile.html">Profile</a>
+      </div>
+      <button class="btn btn-signout" onclick="signOut()">Sign Out</button>
+    </header>
+
+    <div id="adminContent" style="display:none;">
+      <h2>⚙️ Admin Panel</h2>
+      <p style="color:var(--text-secondary);margin:0 0 16px;font-size:0.9em;">Manage leaderboard bots and settings.</p>
+
+      <div class="admin-grid">
+      
+      <div class="card">
+          <h3>Bot Control</h3>
+          <p class="text-muted text-sm">Toggle whether bot (dummy) users appear on the leaderboard.</p>
+          <div class="toggle-wrap">
+            <button class="btn btn-primary" id="toggleBotsBtn" onclick="toggleBots()">Toggle Bots</button>
+            <span class="toggle-status" id="botsStatus">Loading…</span>
+          </div>
+          <div style="margin-top:12px;">
+            <button class="btn btn-sm" id="seedBotsBtn" onclick="seedBots()">🤖 Seed 10 Bot Users</button>
+            <p class="admin-msg" id="seedMsg"></p>
+          </div>
+        </div>
+
+
+        <div class="card">
+          <h3>Dummy Users</h3>
+          <ul class="bot-list" id="botList">
+            <li style="color:var(--text-muted);">Loading…</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="accessDenied" class="access-denied" style="display:none;">
+      <h2>🔒 Access Denied</h2>
+      <p>You do not have admin privileges.</p>
+      <a href="/dashboard.html" class="btn btn-primary" style="margin-top:12px;">← Back to Dashboard</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+ 
+  <link rel="stylesheet" href="/static/css/theme.css" />
+  <link rel="stylesheet" href="/static/css/components.css" />
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="/static/js/firebase-init.js"></script>
+  <script src="/static/js/auth.js"></script>
+  <script src="/static/js/theme.js"></script>
+  <script>
+    loadKaizenGifs();
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    async function loadBotSettings() {
+      try {
+        const data = await apiFetch('/api/admin/bots/settings');
+        updateBotsStatus(data.bots_enabled);
+      } catch (_) {}
+    }
+
+    function updateBotsStatus(enabled) {
+      const el = document.getElementById('botsStatus');
+      el.textContent = enabled ? '✅ Bots ON' : '❌ Bots OFF';
+      el.className = 'toggle-status ' + (enabled ? 'on' : 'off');
+    }
+
+    async function toggleBots() {
+      const btn = document.getElementById('toggleBotsBtn');
+      btn.disabled = true;
+      try {
+        const data = await apiFetch('/api/admin/bots/toggle', { method: 'PUT' });
+        updateBotsStatus(data.bots_enabled);
+        showToast(`Bots ${data.bots_enabled ? 'enabled' : 'disabled'}`);
+      } catch (e) {
+        showToast('Error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function loadBotList() {
+      try {
+        const bots = await apiFetch('/api/admin/bots');
+        const list = document.getElementById('botList');
+        if (!bots.length) {
+          list.innerHTML = '<li style="color:var(--text-muted);">No bots yet. Click "Seed 10 Bot Users" to create them.</li>';
+          return;
+        }
+        list.innerHTML = bots.map(b => `
+          <li>
+            <span>🤖 ${b.display_name}</span>
+            <span>
+              <span class="bot-xp">${b.xp} XP</span>
+              · 🔥 ${b.streak}
+            </span>
+          </li>
+        `).join('');
+      } catch (_) {}
+    }
+
+    async function seedBots() {
+      const btn = document.getElementById('seedBotsBtn');
+      const msg = document.getElementById('seedMsg');
+      btn.disabled = true;
+      msg.textContent = 'Creating bots…';
+      try {
+        const data = await apiFetch('/api/admin/bots/seed', { method: 'POST' });
+        msg.textContent = `✅ Created ${data.created} bot users!`;
+        showToast(`${data.created} bots created`);
+        await loadBotList();
+      } catch (e) {
+        msg.textContent = 'Error: ' + e.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    requireAuth(async (user) => {
+      // Try loading admin data — if 403 is returned, show access denied
+      try {
+        await apiFetch('/api/admin/bots/settings');
+        document.getElementById('adminContent').style.display = '';
+        await loadBotSettings();
+        await loadBotList();
+      } catch (e) {
+        if (e.message.includes('403') || e.message.includes('admin')) {
+          document.getElementById('accessDenied').style.display = '';
+        } else {
+          document.getElementById('accessDenied').style.display = '';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
